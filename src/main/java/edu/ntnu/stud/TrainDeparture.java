@@ -21,9 +21,9 @@ public class TrainDeparture {
   private int track;
   static final String HEADER =
       """
-                +------------+------------+------------+----------------------+-------+------------+-------+"
-                "| Departure  | Train Line | Train ID   | Destination          | Delay | Delay Time | Track |"
-                "+------------+------------+------------+----------------------+-------+------------+-------+""";
+                --------------------------------------------------------------------------------------------
+                | Departure  | Train Line | Train ID   | Destination          | Delay | Delay Time | Track |
+                --------------------------------------------------------------------------------------------""";
 
   // Constructor to initialize the train departure object
   public TrainDeparture(
@@ -72,6 +72,8 @@ public class TrainDeparture {
     return track;
   }
 
+
+
   // set methods:
   public void setDelay(int delay) {
     this.delay = delay;
@@ -93,7 +95,7 @@ public class TrainDeparture {
             "| %-10s | %-10s | %-10s | %-20s | %-5d | %-10d | %-5d |",
             departureTime, trainLine, trainId, destination, delay, delayedTime, track)
         + "\n"
-        + "+------------+------------+------------+----------------------+-------+------------+-------+";
+        + "--------------------------------------------------------------------------------------------";
   }
 
   //additional method that prints out the table header - will be used in the main method so that the header is only printed once
