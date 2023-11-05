@@ -9,36 +9,29 @@ import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 class TrainDepartureRegisterTest {
+    TrainDepartureRegister tdr = new TrainDepartureRegister();
+    TrainDeparture trainDepartureNumber1 = new TrainDeparture(LocalTime.of(15,30), "test", 1, "test", 0, -1);
+    TrainDeparture trainDepartureNumber2 = new TrainDeparture(LocalTime.of(15,30), "test", 2, "test", 0, 2);
+
 
     @Test
     void addTrainDeparture() {
-        TrainDepartureRegister tdr = new TrainDepartureRegister();
-        TrainDeparture trainDepartureNumber1 = new TrainDeparture(LocalTime.of(15,30), "test", 1, "test", 1, 1);
         tdr.addTrainDeparture(trainDepartureNumber1);
-        TrainDeparture trainDepartureNumber2 = new TrainDeparture(LocalTime.of(15,30), "test", 2, "test", 2, 2);
         tdr.addTrainDeparture(trainDepartureNumber2);
-
         assertEquals(2, tdr.allTrainDepartures.size());
 
       }
 
     @Test
     void setDelayThroughRegister() {
-        TrainDepartureRegister tdr = new TrainDepartureRegister();
-        TrainDeparture trainDepartureNumber1 = new TrainDeparture(LocalTime.of(15,30), "test", 1, "test", 1, 1);
-        tdr.addTrainDeparture(trainDepartureNumber1);
         tdr.setDelayThroughRegister(1, 2);
+        assertEquals("15:31", trainDepartureNumber1.getDelayedTimeFormatted());
 
-        assertEquals(3, trainDepartureNumber1.getDelayedTime());
-      }
+    }
 
     @Test
     void setTrackNumberThroughRegister() {
-        TrainDepartureRegister tdr = new TrainDepartureRegister();
-        TrainDeparture trainDepartureNumber1 = new TrainDeparture(LocalTime.of(15,30), "test", 1, "test", 1, 1);
-        tdr.addTrainDeparture(trainDepartureNumber1);
         tdr.setTrackNumberThroughRegister(1, 2);
-
         assertEquals(2, trainDepartureNumber1.getTrack());
       }
 
