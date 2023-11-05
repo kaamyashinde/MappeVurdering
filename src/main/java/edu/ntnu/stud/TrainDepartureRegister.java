@@ -39,33 +39,36 @@ public class TrainDepartureRegister {
   // get-methods:
   public String getTrainDepartureBasedOnTrainId(
       int trainId) { // Get the train departure based on the unique Train Id
-    return allTrainDepartures.stream()
-        .filter(
-            td ->
-                td.getTrainId()
-                    == trainId) // filter the array List to create a new ArrayList only containing
-        // the train departure that matches the trainId
-        .findFirst() // Finds the first element in the stream
-        .map(TrainDeparture::toString) // maps the train departure to a string
-        .orElse(
-            "Train not found."); // if the train is not found, return the string "Train not found."
+    return TrainDeparture.printTableHeader()
+        + "\n"
+        + allTrainDepartures.stream()
+            .filter(
+                td ->
+                    td.getTrainId()
+                        == trainId) // filter the array List to create a new ArrayList only
+            // containing
+            // the train departure that matches the trainId
+            .findFirst() // Finds the first element in the stream because there is only one train
+            // with that specific ID
+            .map(TrainDeparture::toString) // maps the train departure to a string
+            .orElse("Train not found."); // if the train is not found, return the string "Train not
+    // found."
   }
 
-  public String getTrainDepartureBasedOnDestination(
-      String destination) { // Get the train departure based on the Destination
-    String theDestination;
-    theDestination = destination.toLowerCase();
-    return allTrainDepartures.stream()
-        .filter(
-            td ->
-                td.getDestination()
-                    .toLowerCase()
-                    .equals(theDestination)) // filter the array List to create a new ArrayList only
-        // containing the train departure that matches the trainId
-        .findFirst() // Finds the first element in the stream
-        .map(TrainDeparture::toString) // maps the train departure to a string
-        .orElse(
-            "Train not found."); // if the train is not found, return the string "Train not found."
+  public String getTrainDepartureBasedOnDestination(String destination) {
+    String theDestination = destination.toLowerCase();
+
+    List<String> trainDeparturesToSameDestination =
+        allTrainDepartures.stream()
+            .filter(td -> td.getDestination().toLowerCase().equals(theDestination)) //filter based on the destination
+            .map(TrainDeparture::toString)//maps the train departure to a string
+            .toList(); //adds it to the list trainDeparturesToSameDestination
+
+    if (trainDeparturesToSameDestination.isEmpty()) {
+      return "Train not found.";
+    } else {
+      return TrainDeparture.printTableHeader() + "\n" + String.join("\n", trainDeparturesToSameDestination);
+    }
   }
 
   // set-methods:
