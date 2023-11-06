@@ -8,6 +8,7 @@ package edu.ntnu.stud;
  * other tasks such as the toString to print out the whole table and the addTrainDeparture method to
  * add a new train departure to the list.
  */
+import java.time.LocalTime;
 import java.util.*;
 
 public class TrainDepartureRegister {
@@ -18,28 +19,57 @@ public class TrainDepartureRegister {
     allTrainDepartures = new ArrayList<>();
   }
 
-  // utilities:
+  /** The utilities methods in the TrainDepartureRegister are the following: */
   public void addTrainDeparture(
-      TrainDeparture trainDeparture) { // add a new train Departure in the register (ArrayList)
+      /**
+       * @param trainDeparture add a train departure to the register
+       */
+      TrainDeparture trainDeparture) {
     allTrainDepartures.add(trainDeparture);
     this.sortTheTrainDepartureRegister();
   }
 
   @Override
-  public String toString() { // to-string method to print out the whole table.
+  public String toString() {
+    /**
+     * @return the whole table as a string
+     */
     StringBuilder result = new StringBuilder();
     allTrainDepartures.forEach(trains -> result.append(trains.toString()).append("\n"));
-    return TrainDeparture.printTableHeader() + "\n" + result;
+    return TrainDeparture.getTableHeader() + "\n" + result;
   }
 
-  public void sortTheTrainDepartureRegister() { // sort the train departures by departure time
-    Collections.sort(allTrainDepartures, Comparator.comparing(TrainDeparture::getDepartureTime));
+  public void sortTheTrainDepartureRegister() {
+    /** sort the train departures based on the departure time */
+    allTrainDepartures.sort(Comparator.comparing(TrainDeparture::getDepartureTime));
   }
 
-  // get-methods:
+  public void removeTrainDepartureBeforeTime(LocalTime time) {
+    /**
+     * @param time remove the train departures that are before the time
+     */
+    allTrainDepartures.stream()
+        .filter(td -> td.getDelayedTime().isBefore(time))
+        .forEach(allTrainDepartures::remove);
+  }
+
+  public boolean checkIfExists(int trainIdUnique) {
+    /**
+     * @param trainIdUnique
+     * @return true if the train departure exists in the register, false otherwise
+     */
+    return allTrainDepartures.stream()
+        .anyMatch(td -> td.getTrainId() == trainIdUnique);
+  }
+
+  /** The get methods in the TrainDepartureRegister are the following: */
   public String getTrainDepartureBasedOnTrainId(
+      /**
+       * @param trainId
+       * @return the train departure based on the train id as a string
+       */
       int trainId) { // Get the train departure based on the unique Train Id
-    return TrainDeparture.printTableHeader()
+    return TrainDeparture.getTableHeader()
         + "\n"
         + allTrainDepartures.stream()
             .filter(
@@ -56,23 +86,36 @@ public class TrainDepartureRegister {
   }
 
   public String getTrainDepartureBasedOnDestination(String destination) {
+    /**
+     * @param destination
+     * @return the train departure based on the destination as a string
+     */
     String theDestination = destination.toLowerCase();
 
     List<String> trainDeparturesToSameDestination =
         allTrainDepartures.stream()
-            .filter(td -> td.getDestination().toLowerCase().equals(theDestination)) //filter based on the destination
-            .map(TrainDeparture::toString)//maps the train departure to a string
-            .toList(); //adds it to the list trainDeparturesToSameDestination
+            .filter(
+                td ->
+                    td.getDestination()
+                        .toLowerCase()
+                        .equals(theDestination)) // filter based on the destination
+            .map(TrainDeparture::toString) // maps the train departure to a string
+            .toList(); // adds it to the list trainDeparturesToSameDestination
 
     if (trainDeparturesToSameDestination.isEmpty()) {
       return "Train not found.";
     } else {
-      return TrainDeparture.printTableHeader() + "\n" + String.join("\n", trainDeparturesToSameDestination);
+      return TrainDeparture.getTableHeader()
+          + "\n"
+          + String.join("\n", trainDeparturesToSameDestination);
     }
   }
 
   // set-methods:
   public void setDelayThroughRegister(
+      /**
+       * @param trainId and delay add the delay for a train departure with the specific trainId
+       */
       int trainId, int delay) { // set the delay for a train departure for a departure in the list
     allTrainDepartures.stream()
         .filter(traDep -> traDep.getTrainId() == trainId)
@@ -80,6 +123,10 @@ public class TrainDepartureRegister {
   }
 
   public void setTrackNumberThroughRegister(
+      /**
+       * @param trainId and trackNum add the track number for a train departure with the specific
+       *     trainId
+       */
       int trainId,
       int trackNum) { // set the track number for a train departure for a departure in the list
     allTrainDepartures.stream()

@@ -34,7 +34,7 @@ class TrainDepartureRegisterTest {
     tdr.addTrainDeparture(trainDepartureNumber2);
     tdr.addTrainDeparture(trainDepartureNumber3);
     assertEquals(
-        TrainDeparture.HEADER
+        TrainDeparture.getTableHeader()
             + "\n"
             + trainDepartureNumber1
             + "\n"
@@ -52,7 +52,7 @@ class TrainDepartureRegisterTest {
     tdr.addTrainDeparture(trainDepartureNumber3);
     tdr.addTrainDeparture(trainDepartureNumber4);
     assertEquals(
-        TrainDeparture.HEADER
+        TrainDeparture.getTableHeader()
             + "\n"
             + trainDepartureNumber1.toString()
             + "\n"
@@ -70,7 +70,7 @@ class TrainDepartureRegisterTest {
   void getTrainDepartureBasedOnTrainId() {
     tdr.addTrainDeparture(trainDepartureNumber1);
     assertEquals(
-        TrainDeparture.HEADER + "\n" + trainDepartureNumber1.toString(),
+        TrainDeparture.getTableHeader() + "\n" + trainDepartureNumber1.toString(),
         tdr.getTrainDepartureBasedOnTrainId(1));
   }
 
@@ -79,7 +79,7 @@ class TrainDepartureRegisterTest {
     tdr.addTrainDeparture(trainDepartureNumber1);
     tdr.addTrainDeparture(trainDepartureNumber3);
     assertEquals(
-        TrainDeparture.printTableHeader()
+        TrainDeparture.getTableHeader()
             + "\n"
             + trainDepartureNumber1.toString()
             + "\n"
