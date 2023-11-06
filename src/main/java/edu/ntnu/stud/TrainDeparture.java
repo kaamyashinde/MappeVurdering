@@ -11,20 +11,19 @@ import java.time.format.DateTimeFormatter;
  * the header for the main table that will display the train departures.
  */
 public class TrainDeparture {
-  private final LocalTime DEPARTURE_TIME;
+  private final LocalTime departureTime;
   private final String departureTimeFormatted;
-  private final String TRAIN_LINE;
-  private final int TRAIN_ID;
-  private final String DESTINATION;
+  private final String trainLine;
+  private final int trainId;
+  private final String destination;
   private int delay;
   private LocalTime delayedTime;
-  private String delayedTimeFormatted;
   private int track;
 
   // Defining static String constants that will be used in the toString method to avoid repetition
-  static final String SEPARATOR =
+  private static final String SEPARATOR =
       "------------------------------------------------------------------------------------";
-  static final String HEADER =
+  private static final String HEADER =
       SEPARATOR
           + "\n"
           + "| Departure  | Train Line | Train ID   | Destination          | Delay Time | Track |"
@@ -39,21 +38,20 @@ public class TrainDeparture {
       String destination,
       int delay,
       int track) {
-    this.DEPARTURE_TIME = departureTime;
+    this.departureTime = departureTime;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-    this.departureTimeFormatted = DEPARTURE_TIME.format(formatter);
-    this.TRAIN_LINE = trainLine;
-    this.TRAIN_ID = trainId;
-    this.DESTINATION = destination;
+    this.departureTimeFormatted = this.departureTime.format(formatter);
+    this.trainLine = trainLine;
+    this.trainId = trainId;
+    this.destination = destination;
     this.delay = delay;
-    this.delayedTime = DEPARTURE_TIME.plusMinutes(delay);
-    this.delayedTimeFormatted = delayedTime.format(formatter);
+    this.delayedTime = this.departureTime.plusMinutes(delay);
     this.track = track;
   }
 
   // get methods:
   public LocalTime getDepartureTime() {
-    return DEPARTURE_TIME;
+    return departureTime;
   }
 
   public String getDepartureTimeFormatted() {
@@ -61,15 +59,15 @@ public class TrainDeparture {
   }
 
   public String getTrainLine() {
-    return TRAIN_LINE;
+    return trainLine;
   }
 
   public int getTrainId() {
-    return TRAIN_ID;
+    return trainId;
   }
 
   public String getDestination() {
-    return DESTINATION;
+    return destination;
   }
 
   public int getDelay() {
@@ -81,7 +79,8 @@ public class TrainDeparture {
   }
 
   public String getDelayedTimeFormatted() {
-    return delayedTimeFormatted;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+      return delayedTime.format(formatter);
   }
 
   public int getTrack() {
@@ -90,8 +89,7 @@ public class TrainDeparture {
 
   // set methods:
   public void setDelayAndDelayTime(int delay) {
-    this.delay = delay;
-    this.delayedTime = DEPARTURE_TIME.plusMinutes(delay);
+    this.delayedTime = departureTime.plusMinutes(delay);
   }
 
   public void setTrack(int track) {
@@ -99,7 +97,7 @@ public class TrainDeparture {
   }
 
   // Additional method that prints out the table header - will be used in the register methods
-  public static String printTableHeader() {
+  public static String getTableHeader() {
     // Print the table header
     return HEADER;
   }
@@ -113,13 +111,13 @@ public class TrainDeparture {
       return String.format(
               // Define the format for each row of the table
               "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5s |",
-              departureTimeFormatted, TRAIN_LINE, TRAIN_ID, DESTINATION, delayedTime, " ")
+              departureTimeFormatted, trainLine, trainId, destination, delayedTime, " ")
           + "\n"
           + SEPARATOR;
     } else if (delay == 0) { // The scenario where the train departure is on time
       return String.format(
               "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5d |",
-              departureTimeFormatted, TRAIN_LINE, TRAIN_ID, DESTINATION, " ", track)
+              departureTimeFormatted, trainLine, trainId, destination, " ", track)
           + "\n"
           + SEPARATOR;
     } else
@@ -127,7 +125,7 @@ public class TrainDeparture {
               .format( // The scenario where the train departure is delayed and has a track number
                        // assigned
                   "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5d |",
-                  departureTimeFormatted, TRAIN_LINE, TRAIN_ID, DESTINATION, delayedTime, track)
+                  departureTimeFormatted, trainLine, trainId, destination, delayedTime, track)
           + "\n"
           + SEPARATOR;
   }

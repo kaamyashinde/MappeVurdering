@@ -3,7 +3,7 @@ package edu.ntnu.stud;
 import java.time.LocalTime;
 /**
  * This file runs JUnit tests on the TrainDeparture entity class to test the toString and
- * printTableHeader methods. The other methods aren't tested because they are getters and setters,
+ * getTableHeader methods. The other methods aren't tested because they are getters and setters,
  * and they are tested in the TrainDepartureRegisterTest class.
  */
 import org.junit.jupiter.api.Test;
@@ -58,8 +58,8 @@ class TrainDepartureTest {
   }
 
   @Test
-  void printTableHeader() {
-    assertEquals(TrainDeparture.HEADER, TrainDeparture.printTableHeader());
+  void getTableHeader() {
+    assertEquals(TrainDeparture.getTableHeader(), TrainDeparture.getTableHeader());
   }
 
   // testing the get-methods:
