@@ -88,7 +88,8 @@ public class TrainDeparture {
   }
 
   // set methods:
-  public void setDelayAndDelayTime(int delay) {
+  public void setDelayAndDelayTime(int newDelay) {
+    this.delay = newDelay;
     this.delayedTime = departureTime.plusMinutes(delay);
   }
 

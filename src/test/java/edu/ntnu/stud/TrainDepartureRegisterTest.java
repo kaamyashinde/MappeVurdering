@@ -64,6 +64,30 @@ class TrainDepartureRegisterTest {
             + "\n",
         tdr.toString());
   }
+  @Test
+  void removeTrainDepartureBeforeTime() {
+    tdr.addTrainDeparture(trainDepartureNumber1);
+    tdr.addTrainDeparture(trainDepartureNumber2);
+    tdr.addTrainDeparture(trainDepartureNumber3);
+    tdr.addTrainDeparture(trainDepartureNumber4);
+    tdr.removeTrainDepartureBeforeTime(LocalTime.of(11, 00));
+    assertEquals(TrainDeparture.getTableHeader()
+            + "\n"
+            + trainDepartureNumber4
+            + "\n"
+            + trainDepartureNumber2
+            + "\n"
+            + trainDepartureNumber3
+            + "\n", tdr.toString());
+  }
+
+  @Test
+  void checkIfExists() {
+    tdr.addTrainDeparture(trainDepartureNumber1);
+    assertTrue(tdr.checkIfExists(1));
+    assertFalse(tdr.checkIfExists(2));
+  }
+
 
   // JUnit test for the get-methods:
   @Test
@@ -101,3 +125,4 @@ class TrainDepartureRegisterTest {
     assertEquals(2, trainDepartureNumber2.getTrack());
   }
 }
+

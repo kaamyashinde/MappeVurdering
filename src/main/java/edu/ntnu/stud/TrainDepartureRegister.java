@@ -44,13 +44,11 @@ public class TrainDepartureRegister {
     allTrainDepartures.sort(Comparator.comparing(TrainDeparture::getDepartureTime));
   }
 
-  public void removeTrainDepartureBeforeTime(LocalTime time) {
+  public void removeTrainDepartureBeforeTime(LocalTime theTime) {
     /**
      * @param time remove the train departures that are before the time
      */
-    allTrainDepartures.stream()
-        .filter(td -> td.getDelayedTime().isBefore(time))
-        .forEach(allTrainDepartures::remove);
+    allTrainDepartures.removeIf(td -> td.getDelayedTime().isBefore(theTime)); //can use this example in report!
   }
 
   public boolean checkIfExists(int trainIdUnique) {

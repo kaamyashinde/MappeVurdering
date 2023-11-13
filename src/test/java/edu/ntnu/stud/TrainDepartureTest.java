@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TrainDepartureTest {
+
   TrainDeparture trainDeparture =
       new TrainDeparture(
           LocalTime.of(15, 30),
