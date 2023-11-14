@@ -1,5 +1,6 @@
 package edu.ntnu.stud;
 
+import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -17,28 +18,21 @@ public class TrainDeparture {
   private final int trainId;
   private final String destination;
   private int delay;
+  // friendly)
   private LocalTime delayedTime;
   private int track;
-
-  // Defining static String constants that will be used in the toString method to avoid repetition
-  private static final String SEPARATOR =
-      "------------------------------------------------------------------------------------";
-  private static final String HEADER =
-      SEPARATOR
-          + "\n"
-          + "| Departure  | Train Line | Train ID   | Destination          | Delay Time | Track |"
-          + "\n"
-          + SEPARATOR;
+  private static final DateTimeFormatter DELAY_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+  private static final DateTimeFormatter DEPARTURE_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
   /**
    * The constructor for the train departure class. It takes in the following parameters: -
    *
-   * @param departureTime -> invalid data set to 00:00
-   * @param trainLine -> invalid data set to "Unknown"
-   * @param trainId -> invalid data set to -2
-   * @param destination -> invalid data set to "Unknown"
-   * @param delay -> invalid data set to -2
-   * @param track -> invalid data set to -2
+   * @param departureTime time the train leaves
+   * @param trainLine the name of the train line
+   * @param trainId the unique identifier for the train
+   * @param destination place the train will arrive at
+   * @param delay amount of time the train is delayed
+   * @param track the track the train is on
    */
   public TrainDeparture(
       LocalTime departureTime,
@@ -46,25 +40,62 @@ public class TrainDeparture {
       int trainId,
       String destination,
       int delay,
-      int track) {
+      int track)
+      throws IllegalArgumentException {
+    validateInput(departureTime, trainLine, trainId, destination, delay, track);
     this.departureTime = departureTime;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-    this.departureTimeFormatted =
-        this.departureTime.format(
-            formatter); // do not need an invalid data checker coz variable depends on departureTime
-    this.trainLine =
-        (trainLine == null || trainLine.isEmpty() || trainLine.isBlank()) ? "Unknown" : trainLine;
-    this.trainId = (trainId < 0) ? -2 : trainId;
-    this.destination =
-        (destination == null || destination.isEmpty() || destination.isBlank())
-            ? "Unknown"
-            : destination;
-    this.delay = (delay < 0) ? -2 : delay;
+    this.departureTimeFormatted = this.departureTime.format(DEPARTURE_FORMATTER);
+    this.trainLine = trainLine;
+    this.trainId = trainId;
+    this.destination = destination;
+    this.delay = delay;
     this.delayedTime = this.departureTime.plusMinutes(delay);
-    this.track = (track < -1) ? -2 : track;
+    this.track = track;
   }
 
-
+  /**
+   * This method will take in the same parameters as the constructor and validate them by throwing
+   * an error if an Illegal Argument is detected.
+   *
+   * @param departureTime time the train leaves
+   * @param trainLine the name of the train line
+   * @param trainId the unique identifier for the train
+   * @param destination place the train will arrive at
+   * @param delay amount of time the train is delayed
+   * @param track the track the train is on
+   */
+  private void validateInput(
+      LocalTime departureTime,
+      String trainLine,
+      int trainId,
+      String destination,
+      int delay,
+      int track) {
+    if (departureTime == null) {
+      throw new IllegalArgumentException(
+          " The time cannot be null. Please enter a value for the time");
+    }
+    if (departureTime.isBefore(LocalTime.of(0, 0)) || departureTime.isAfter(LocalTime.of(23, 59))) {
+      throw new DateTimeException("The time must be between 00:00 and 23:59. Please try again.");
+    }
+    if (trainLine == null || trainLine.isEmpty()) {
+      throw new IllegalArgumentException(
+          "The train line cannot be null or empty. Please try again.");
+    }
+    if (trainId < 0) {
+      throw new IllegalArgumentException("The train id cannot be negative. Please try again.");
+    }
+    if (destination == null || destination.isEmpty()) {
+      throw new IllegalArgumentException(
+          "The destination cannot be null or empty. Please try again.");
+    }
+    if (delay < 0) {
+      throw new IllegalArgumentException("The delay cannot be negative. Please try again.");
+    }
+    if (track < -1) {
+      throw new IllegalArgumentException("The track cannot be negative. Please try again.");
+    }
+  }
 
   // get methods:
   public LocalTime getDepartureTime() {
@@ -96,8 +127,7 @@ public class TrainDeparture {
   }
 
   public String getDelayedTimeFormatted() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-    return delayedTime.format(formatter);
+    return delayedTime.format(DELAY_FORMATTER);
   }
 
   public int getTrack() {
@@ -105,46 +135,47 @@ public class TrainDeparture {
   }
 
   // set methods:
+
+  /**
+   * This method will set the delayed time for a train departure
+   *
+   * @param newDelay the delay in minutes
+   */
   public void setDelayAndDelayTime(int newDelay) {
+    if (newDelay < 0) {
+      throw new IllegalArgumentException("The delay cannot be negative. Please try again.");
+    }
     this.delay = newDelay;
     this.delayedTime = departureTime.plusMinutes(delay);
   }
 
+  /**
+   * This method will set the track number for a train departure
+   *
+   * @param track the track number
+   */
   public void setTrack(int track) {
+    if (track < -1) {
+      throw new IllegalArgumentException("The track cannot be negative. Please try again.");
+    }
     this.track = track;
   }
 
-  // Additional method that prints out the table header - will be used in the register methods
-  public static String getTableHeader() {
-    // Print the table header
-    return HEADER;
-  }
-
-  // to-string method
+  /**
+   * This method formats the attributes of the object to a string that can be printed out as the
+   * rows in the final table
+   *
+   * @return the formatted string
+   */
   @Override
   public String toString() {
-
-    if (track
-        == -1) { // The scenario where there is no track number assigned to the train departure
-      return String.format(
-              // Define the format for each row of the table
-              "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5s |",
-              departureTimeFormatted, trainLine, trainId, destination, delayedTime, " ")
-          + "\n"
-          + SEPARATOR;
-    } else if (delay == 0) { // The scenario where the train departure is on time
-      return String.format(
-              "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5d |",
-              departureTimeFormatted, trainLine, trainId, destination, " ", track)
-          + "\n"
-          + SEPARATOR;
-    } else
-      return String
-              .format( // The scenario where the train departure is delayed and has a track number
-                  // assigned
-                  "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5d |",
-                  departureTimeFormatted, trainLine, trainId, destination, delayedTime, track)
-          + "\n"
-          + SEPARATOR;
+    return String.format(
+        "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5s |",
+        departureTimeFormatted,
+        trainLine,
+        trainId,
+        destination,
+        (delay > 0) ? delayedTime : " ",
+        (track == -1) ? " " : track);
   }
 }
