@@ -3,8 +3,8 @@ package edu.ntnu.stud;
 import java.time.LocalTime;
 /**
  * This file runs JUnit tests on the TrainDeparture entity class to test the toString and
- * getTableHeader methods. The other methods aren't tested because they are getters and setters,
- * and they are tested in the TrainDepartureRegisterTest class.
+ * getTableHeader methods. The other methods aren't tested because they are getters and setters, and
+ * they are tested in the TrainDepartureRegisterTest class.
  */
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +36,7 @@ class TrainDepartureTest {
           "test",
           2,
           -1); // Delayed train departure that does not have a track
+  TrainDeparture trainDeparture3 = new TrainDeparture(LocalTime.of(3, 6), "", -76, "", -90, -67);
 
   @Test
   void testToString() {
@@ -49,18 +50,13 @@ class TrainDepartureTest {
             + "------------------------------------------------------------------------------------",
         trainDeparture1
             .toString()); // Since it is not delayed, a blank space should be printed for the
-                          // delayed time
+    // delayed time
     assertEquals(
         "| 15:30      | test       | 1          | test                 | 15:32      |       |\n"
             + "------------------------------------------------------------------------------------",
         trainDeparture2
             .toString()); // Since it does not have a track, a blank space should be printed for the
-                          // track
-  }
-
-  @Test
-  void getTableHeader() {
-    assertEquals(TrainDeparture.getTableHeader(), TrainDeparture.getTableHeader());
+    // track
   }
 
   // testing the get-methods:
@@ -77,13 +73,28 @@ class TrainDepartureTest {
   }
 
   @Test
+  void getTrainLineNegativeTest() {
+    assertEquals("Unknown", trainDeparture3.getTrainLine());
+  }
+
+  @Test
   void getTrainId() {
     assertEquals(1, trainDeparture.getTrainId());
   }
 
   @Test
+  void getTrainIdNegativeTest() {
+    assertEquals(-2, trainDeparture3.getTrainId());
+  }
+
+  @Test
   void getDestination() {
     assertEquals("test", trainDeparture.getDestination());
+  }
+
+  @Test
+  void getDestinationNegativeTest() {
+    assertEquals("Unknown", trainDeparture3.getDestination());
   }
 
   @Test
@@ -94,9 +105,14 @@ class TrainDepartureTest {
   }
 
   @Test
+  void getDelayNegativeTest() {
+    assertEquals(-2, trainDeparture3.getDelay());
+  }
+
+  @Test
   void getDelayedTimeFormatted() {
-      // if this test works then the method for getDelayedTime() works as well
-      // because if it hadn't then it wouldn't have had converted the right value to String
+    // if this test works then the method for getDelayedTime() works as well
+    // because if it hadn't then it wouldn't have had converted the right value to String
     assertEquals("15:32", trainDeparture.getDelayedTimeFormatted());
   }
 
@@ -104,7 +120,14 @@ class TrainDepartureTest {
   void getTrack() {
     assertEquals(1, trainDeparture.getTrack());
     assertEquals(
-            -1, trainDeparture2.getTrack()); // Testing the case where the train departure does not have a track
+        -1,
+        trainDeparture2
+            .getTrack()); // Testing the case where the train departure does not have a track
+  }
+
+  @Test
+  void getTrackNegativeTest() {
+    assertEquals(-2, trainDeparture3.getTrack());
   }
 
   // testing the set-methods:

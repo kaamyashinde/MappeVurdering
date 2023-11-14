@@ -30,7 +30,16 @@ public class TrainDeparture {
           + "\n"
           + SEPARATOR;
 
-  // Constructor to initialize the train departure object
+  /**
+   * The constructor for the train departure class. It takes in the following parameters: -
+   *
+   * @param departureTime -> invalid data set to 00:00
+   * @param trainLine -> invalid data set to "Unknown"
+   * @param trainId -> invalid data set to -2
+   * @param destination -> invalid data set to "Unknown"
+   * @param delay -> invalid data set to -2
+   * @param track -> invalid data set to -2
+   */
   public TrainDeparture(
       LocalTime departureTime,
       String trainLine,
@@ -40,14 +49,22 @@ public class TrainDeparture {
       int track) {
     this.departureTime = departureTime;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-    this.departureTimeFormatted = this.departureTime.format(formatter);
-    this.trainLine = trainLine;
-    this.trainId = trainId;
-    this.destination = destination;
-    this.delay = delay;
+    this.departureTimeFormatted =
+        this.departureTime.format(
+            formatter); // do not need an invalid data checker coz variable depends on departureTime
+    this.trainLine =
+        (trainLine == null || trainLine.isEmpty() || trainLine.isBlank()) ? "Unknown" : trainLine;
+    this.trainId = (trainId < 0) ? -2 : trainId;
+    this.destination =
+        (destination == null || destination.isEmpty() || destination.isBlank())
+            ? "Unknown"
+            : destination;
+    this.delay = (delay < 0) ? -2 : delay;
     this.delayedTime = this.departureTime.plusMinutes(delay);
-    this.track = track;
+    this.track = (track < -1) ? -2 : track;
   }
+
+
 
   // get methods:
   public LocalTime getDepartureTime() {
@@ -80,7 +97,7 @@ public class TrainDeparture {
 
   public String getDelayedTimeFormatted() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-      return delayedTime.format(formatter);
+    return delayedTime.format(formatter);
   }
 
   public int getTrack() {
@@ -124,7 +141,7 @@ public class TrainDeparture {
     } else
       return String
               .format( // The scenario where the train departure is delayed and has a track number
-                       // assigned
+                  // assigned
                   "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5d |",
                   departureTimeFormatted, trainLine, trainId, destination, delayedTime, track)
           + "\n"
