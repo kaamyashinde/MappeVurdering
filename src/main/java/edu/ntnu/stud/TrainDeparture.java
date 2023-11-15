@@ -162,7 +162,8 @@ public class TrainDeparture {
    */
   public void setTrack(int track) {
     if (track < 0 || track > 15) {
-      throw new IllegalArgumentException("There are 15 tracks at the station. Please try again with a value between 1 and 15");
+      throw new IllegalArgumentException(
+          "There are 15 tracks at the station. Please try again with a value between 1 and 15");
     }
     this.track = track;
   }

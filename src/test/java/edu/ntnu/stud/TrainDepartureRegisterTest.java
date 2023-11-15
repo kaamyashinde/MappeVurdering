@@ -2,6 +2,7 @@ package edu.ntnu.stud;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.time.DateTimeException;
@@ -31,138 +32,150 @@ class TrainDepartureRegisterTest {
     tdr.addTrainDeparture(trainDepartureNumber4);
   }
 
-  /** Adding a train departure with valid attribute values. */
-  @Test
-  @DisplayName("Add train departure")
-  void addTrainDepartureWithValidInputs() {
-    assertEquals(4, tdr.allTrainDepartures.size());
+  /** Collection of tests for the utilities */
+  @Nested
+  @DisplayName("The Utility Methods")
+  class TestUtilities {
+    /** Adding a train departure with valid attribute values. */
+    @Test
+    @DisplayName("Add train departure")
+    void addTrainDepartureWithValidInputs() {
+      assertEquals(4, tdr.allTrainDepartures.size());
+    }
+
+    /** Testing the sorting of the register and the toString method. */
+    @Test
+    @DisplayName("Test the sorting and toString method")
+    void sortTrainDepartureRegisterAndReturnUsingToString() {
+      assertEquals(
+          trainDepartureNumber1
+              + "\n"
+              + trainDepartureNumber4
+              + "\n"
+              + trainDepartureNumber2
+              + "\n"
+              + trainDepartureNumber3,
+          tdr.toString());
+    }
+
+    /** Testing whether the train departures are removed before the time given. */
+    @Test
+    @DisplayName("Test the removal of train departures")
+    void removeTrainDepartureBeforeTime() {
+      tdr.removeTrainDepartureBeforeTime(LocalTime.of(11, 0));
+      assertEquals(
+          trainDepartureNumber4 + "\n" + trainDepartureNumber2 + "\n" + trainDepartureNumber3,
+          tdr.toString());
+    }
+
+    /** Testing the error handling of the method that removes train departures. */
+    @Test
+    @DisplayName("Error handling of removeTrainDepartureBeforeTime")
+    void removeTrainDepartureBeforeTimeErrorHandling() {
+      assertThrows(NullPointerException.class, () -> tdr.removeTrainDepartureBeforeTime(null));
+      assertThrows(
+          DateTimeException.class, () -> tdr.removeTrainDepartureBeforeTime(LocalTime.of(24, 0)));
+    }
+
+    /** Testing whether a train departure exists in the register. */
+    @Test
+    @DisplayName("Check if train departure exists in the register")
+    void checkIfExists() {
+      assertTrue(tdr.checkIfExists(1));
+      assertFalse(tdr.checkIfExists(9));
+    }
+
+    /**
+     * Testing the error handling of the method that checks if a train departure exists in the
+     * register.
+     */
+    @Test
+    @DisplayName("Error handling of checkIfExists")
+    void checkIfExistsErrorHandling() {
+      assertThrows(IllegalArgumentException.class, () -> tdr.checkIfExists(-1));
+    }
   }
 
-  /** Testing the sorting of the register and the toString method */
-  @Test
-  @DisplayName("Test the sorting and toString method")
-  void sortTrainDepartureRegisterAndReturnUsingToString() {
-    assertEquals(
-        trainDepartureNumber1
-            + "\n"
-            + trainDepartureNumber4
-            + "\n"
-            + trainDepartureNumber2
-            + "\n"
-            + trainDepartureNumber3,
-        tdr.toString());
+  /** Collection of tests for the getters. */
+  @Nested
+  @DisplayName("Testing the getters")
+  class TestGetters {
+    /** Testing the filtering of the train departures based on the train ID. */
+    @Test
+    @DisplayName("Get train departure based on train ID")
+    void getTrainDepartureBasedOnTrainId() {
+      assertEquals(trainDepartureNumber1.toString(), tdr.getTrainDepartureBasedOnTrainId(1));
+    }
+
+    /**
+     * Testing the error handling of the method that filters the train departures based on the train
+     * ID.
+     */
+    @Test
+    @DisplayName("Error handling of getTrainDepartureBasedOnTrainId")
+    void getTrainDepartureBasedOnTrainIdErrorHandling() {
+      assertThrows(IllegalArgumentException.class, () -> tdr.getTrainDepartureBasedOnTrainId(-1));
+    }
+
+    /** Testing the filtering of the train departures based on the destination. */
+    @Test
+    @DisplayName("Get train departure based on destination")
+    void getTrainDepartureBasedOnDestination() {
+      assertEquals(
+          trainDepartureNumber1.toString() + "\n" + trainDepartureNumber3,
+          tdr.getTrainDepartureBasedOnDestination("Bergen"));
+    }
+
+    /**
+     * Testing the error handling of the method that filters the train departures based on the
+     * destination.
+     */
+    @Test
+    @DisplayName("Error handling of getTrainDepartureBasedOnDestination")
+    void getTrainDepartureBasedOnDestinationErrorHandling() {
+      assertThrows(NullPointerException.class, () -> tdr.getTrainDepartureBasedOnDestination(null));
+      assertThrows(
+          IllegalArgumentException.class, () -> tdr.getTrainDepartureBasedOnDestination(""));
+      assertThrows(
+          IllegalArgumentException.class, () -> tdr.getTrainDepartureBasedOnDestination("   "));
+    }
   }
 
-  /** Testing whether the train departures are removed before the time given */
-  @Test
-  @DisplayName("Test the removal of train departures")
-  void removeTrainDepartureBeforeTime() {
-    tdr.removeTrainDepartureBeforeTime(LocalTime.of(11, 0));
-    assertEquals(
-        trainDepartureNumber4 + "\n" + trainDepartureNumber2 + "\n" + trainDepartureNumber3,
-        tdr.toString());
-  }
+  /** Collection of tests for the setters. */
+  @Nested
+  @DisplayName("Testing the setters")
+  class TestSetters {
+    /** Testing the setting of the delay for a train departure. */
+    @Test
+    @DisplayName("Set delay for a train departure")
+    void setDelayThroughRegister() {
+      tdr.setDelayThroughRegister(2, 2);
+      assertEquals("12:32", trainDepartureNumber2.getDelayedTimeFormatted());
+    }
 
-  /** Testing the error handling of the method that removes train departures */
-  @Test
-  @DisplayName("Error handling of removeTrainDepartureBeforeTime")
-  void removeTrainDepartureBeforeTimeErrorHandling() {
-    assertThrows(NullPointerException.class, () -> tdr.removeTrainDepartureBeforeTime(null));
-    assertThrows(
-        DateTimeException.class, () -> tdr.removeTrainDepartureBeforeTime(LocalTime.of(24, 0)));
-  }
+    /** Error handling of the method that sets the delay for a train departure. */
+    @Test
+    @DisplayName("Error handling of setDelayThroughRegister")
+    void setDelayThroughRegisterErrorHandling() {
+      assertThrows(IllegalArgumentException.class, () -> tdr.setDelayThroughRegister(-1, 2));
+      assertThrows(IllegalArgumentException.class, () -> tdr.setDelayThroughRegister(2, -2));
+    }
 
-  /** Testing whether a train departure exists in the register */
-  @Test
-  @DisplayName("Check if train departure exists in the register")
-  void checkIfExists() {
-    assertTrue(tdr.checkIfExists(1));
-    assertFalse(tdr.checkIfExists(9));
-  }
+    /** Testing the setting of the track number for a train departure. */
+    @Test
+    @DisplayName("Set track number for a train departure")
+    void setTrackNumberThroughRegister() {
+      tdr.setTrackNumberThroughRegister(2, 2);
+      assertEquals(2, trainDepartureNumber2.getTrack());
+    }
 
-  /**
-   * Testing the error handling of the method that checks if a train departure exists in the
-   * register
-   */
-  @Test
-  @DisplayName("Error handling of checkIfExists")
-  void checkIfExistsErrorHandling() {
-    assertThrows(IllegalArgumentException.class, () -> tdr.checkIfExists(-1));
-  }
-
-  // JUnit test for the get-methods:
-
-  /** Testing the filtering of the train departures based on the train ID */
-  @Test
-  @DisplayName("Get train departure based on train ID")
-  void getTrainDepartureBasedOnTrainId() {
-    assertEquals(trainDepartureNumber1.toString(), tdr.getTrainDepartureBasedOnTrainId(1));
-  }
-
-  /**
-   * Testing the error handling of the method that filters the train departures based on the train
-   * ID
-   */
-  @Test
-  @DisplayName("Error handling of getTrainDepartureBasedOnTrainId")
-  void getTrainDepartureBasedOnTrainIdErrorHandling() {
-    assertThrows(IllegalArgumentException.class, () -> tdr.getTrainDepartureBasedOnTrainId(-1));
-  }
-
-  /** Testing the filtering of the train departures based on the destination */
-  @Test
-  @DisplayName("Get train departure based on destination")
-  void getTrainDepartureBasedOnDestination() {
-    assertEquals(
-        trainDepartureNumber1.toString() + "\n" + trainDepartureNumber3,
-        tdr.getTrainDepartureBasedOnDestination("Bergen"));
-  }
-
-  /**
-   * Testing the error handling of the method that filters the train departures based on the
-   * destination
-   */
-  @Test
-  @DisplayName("Error handling of getTrainDepartureBasedOnDestination")
-  void getTrainDepartureBasedOnDestinationErrorHandling() {
-    assertThrows(NullPointerException.class, () -> tdr.getTrainDepartureBasedOnDestination(null));
-    assertThrows(IllegalArgumentException.class, () -> tdr.getTrainDepartureBasedOnDestination(""));
-    assertThrows(
-        IllegalArgumentException.class, () -> tdr.getTrainDepartureBasedOnDestination("   "));
-  }
-
-  // JUnit test for the set-methods:
-
-  /** Testing the setting of the delay for a train departure */
-  @Test
-  @DisplayName("Set delay for a train departure")
-  void setDelayThroughRegister() {
-    tdr.setDelayThroughRegister(2, 2);
-    assertEquals("12:32", trainDepartureNumber2.getDelayedTimeFormatted());
-  }
-
-  /** Error handling of the method that sets the delay for a train departure */
-  @Test
-  @DisplayName("Error handling of setDelayThroughRegister")
-  void setDelayThroughRegisterErrorHandling() {
-    assertThrows(IllegalArgumentException.class, () -> tdr.setDelayThroughRegister(-1, 2));
-    assertThrows(IllegalArgumentException.class, () -> tdr.setDelayThroughRegister(2, -2));
-  }
-
-  /** Testing the setting of the track number for a train departure */
-  @Test
-  @DisplayName("Set track number for a train departure")
-  void setTrackNumberThroughRegister() {
-    tdr.setTrackNumberThroughRegister(2, 2);
-    assertEquals(2, trainDepartureNumber2.getTrack());
-  }
-
-  /** Error handling of the method that sets the track number for a train departure */
-  @Test
-  @DisplayName("Error handling of setTrackNumberThroughRegister")
-  void setTrackNumberThroughRegisterErrorHandling() {
-    assertThrows(IllegalArgumentException.class, () -> tdr.setTrackNumberThroughRegister(-1, 2));
-    assertThrows(IllegalArgumentException.class, () -> tdr.setTrackNumberThroughRegister(2, -2));
-    assertThrows(IllegalArgumentException.class, () -> tdr.setTrackNumberThroughRegister(2, 16));
+    /** Error handling of the method that sets the track number for a train departure. */
+    @Test
+    @DisplayName("Error handling of setTrackNumberThroughRegister")
+    void setTrackNumberThroughRegisterErrorHandling() {
+      assertThrows(IllegalArgumentException.class, () -> tdr.setTrackNumberThroughRegister(-1, 2));
+      assertThrows(IllegalArgumentException.class, () -> tdr.setTrackNumberThroughRegister(2, -2));
+      assertThrows(IllegalArgumentException.class, () -> tdr.setTrackNumberThroughRegister(2, 16));
+    }
   }
 }
