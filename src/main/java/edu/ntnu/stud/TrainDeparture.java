@@ -72,8 +72,7 @@ public class TrainDeparture {
       int delay,
       int track) {
     if (departureTime == null) {
-      throw new IllegalArgumentException(
-          " The time cannot be null. Please enter a value for the time");
+      throw new DateTimeException(" The time cannot be null. Please enter a value for the time");
     }
     if (departureTime.isBefore(LocalTime.of(0, 0)) || departureTime.isAfter(LocalTime.of(23, 59))) {
       throw new DateTimeException("The time must be between 00:00 and 23:59. Please try again.");
@@ -82,7 +81,7 @@ public class TrainDeparture {
       throw new IllegalArgumentException(
           "The train line cannot be null or empty. Please try again.");
     }
-    if (trainId < 0) {
+    if (trainId < 1) {
       throw new IllegalArgumentException("The train id cannot be negative. Please try again.");
     }
     if (destination == null || destination.isEmpty()) {
@@ -94,6 +93,9 @@ public class TrainDeparture {
     }
     if (track < -1) {
       throw new IllegalArgumentException("The track cannot be negative. Please try again.");
+    } else if (track > 15) {
+      throw new IllegalArgumentException(
+          "There are only 15 tracks at the station. Please choose a track between 1 and 15");
     }
   }
 
@@ -137,7 +139,7 @@ public class TrainDeparture {
   // set methods:
 
   /**
-   * This method will set the delayed time for a train departure
+   * This method will set the delayed time for a train departure.
    *
    * @param newDelay the delay in minutes
    */
@@ -150,20 +152,20 @@ public class TrainDeparture {
   }
 
   /**
-   * This method will set the track number for a train departure
+   * This method will set the track number for a train departure.
    *
    * @param track the track number
    */
   public void setTrack(int track) {
-    if (track < -1) {
-      throw new IllegalArgumentException("The track cannot be negative. Please try again.");
+    if (track < 0) {
+      throw new IllegalArgumentException("The track cannot be negative or zero. Please try again.");
     }
     this.track = track;
   }
 
   /**
    * This method formats the attributes of the object to a string that can be printed out as the
-   * rows in the final table
+   * rows in the final table.
    *
    * @return the formatted string
    */

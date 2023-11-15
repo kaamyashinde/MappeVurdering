@@ -27,7 +27,7 @@ class TrainDepartureTest {
 
   /** This method is run before each test to set up the objects that are used in the tests. */
   @BeforeEach
-  private void setup() {
+  public void setup() {
     trainDeparture1 = new TrainDeparture(LocalTime.of(10, 30), TRAIN_LINE, 1, DESTINATION, 2, -1);
     trainDeparture2 = new TrainDeparture(LocalTime.of(11, 30), TRAIN_LINE, 2, DESTINATION, 5, 1);
     trainDeparture3 = new TrainDeparture(LocalTime.of(23, 59), TRAIN_LINE, 3, DESTINATION, 0, 5);
@@ -76,6 +76,7 @@ class TrainDepartureTest {
       assertThrows(
           DateTimeException.class,
           () -> new TrainDeparture(LocalTime.of(-10, 30), "l", 1, "Oslo", 2, 1));
+      assertThrows(DateTimeException.class, () -> new TrainDeparture(null, "l", 1, "Oslo", 2, 1));
     }
 
     /** Testing the train line method with valid input */
@@ -92,6 +93,9 @@ class TrainDepartureTest {
       assertThrows(
           IllegalArgumentException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), "", 1, "Oslo", 2, 1));
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> new TrainDeparture(LocalTime.of(10, 30), null, 1, "Oslo", 2, 1));
     }
 
     /** Testing the train ID method with valid input */
@@ -124,6 +128,9 @@ class TrainDepartureTest {
       assertThrows(
           IllegalArgumentException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), "l", 1, "", 2, 1));
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> new TrainDeparture(LocalTime.of(10, 30), "l", 1, null, 2, 1));
     }
 
     /** Testing the getDelay method with a valid input */
@@ -164,6 +171,9 @@ class TrainDepartureTest {
       assertThrows(
           IllegalArgumentException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), "l", 1, "Oslo", 0, -8));
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> new TrainDeparture(LocalTime.of(10, 30), "l", 1, "Oslo", 0, 16));
     }
   }
 
@@ -195,7 +205,7 @@ class TrainDepartureTest {
       assertEquals(2, trainDeparture4.getTrack());
     }
 
-    /** Testing the setTrack method with a negative number that is less than -1 */
+    /** Testing the setTrack method with a negative number */
     @Test
     @DisplayName("Setting the track with valid input")
     void setTrackWithInvalidInput() {
