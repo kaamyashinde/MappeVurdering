@@ -3,6 +3,7 @@ package edu.ntnu.stud;
 import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /**
  * This file contains the class for the train departure. The information that is to be displayed for
@@ -71,31 +72,34 @@ public class TrainDeparture {
       String destination,
       int delay,
       int track) {
-    if (departureTime == null) {
-      throw new DateTimeException(" The time cannot be null. Please enter a value for the time");
-    }
+    Objects.requireNonNull(departureTime, "The time cannot be null. Please enter a value for time");
     if (departureTime.isBefore(LocalTime.of(0, 0)) || departureTime.isAfter(LocalTime.of(23, 59))) {
       throw new DateTimeException("The time must be between 00:00 and 23:59. Please try again.");
     }
-    if (trainLine == null || trainLine.isEmpty()) {
+
+    Objects.requireNonNull(
+        trainLine, "The train line cannot be null. Please enter a value for train line");
+    if (trainLine.isBlank() || trainLine.isEmpty()) {
       throw new IllegalArgumentException(
-          "The train line cannot be null or empty. Please try again.");
+          "No Train line has been detected. Please enter a value for train line");
     }
+
     if (trainId < 1) {
       throw new IllegalArgumentException("The train id cannot be negative. Please try again.");
     }
-    if (destination == null || destination.isEmpty()) {
+
+    Objects.requireNonNull(
+        destination, "The destination cannot be null. Please enter a value for destination");
+    if (destination.isBlank() || destination.isEmpty()) {
       throw new IllegalArgumentException(
-          "The destination cannot be null or empty. Please try again.");
+          "No destination has been detected. Please enter the destination");
     }
     if (delay < 0) {
       throw new IllegalArgumentException("The delay cannot be negative. Please try again.");
     }
-    if (track < -1) {
-      throw new IllegalArgumentException("The track cannot be negative. Please try again.");
-    } else if (track > 15) {
+    if (track < -1 || track == 0 || track > 15) {
       throw new IllegalArgumentException(
-          "There are only 15 tracks at the station. Please choose a track between 1 and 15");
+          "There are 15 tracks at the station. Please enter a value for track between 1 and 15");
     }
   }
 
@@ -157,8 +161,8 @@ public class TrainDeparture {
    * @param track the track number
    */
   public void setTrack(int track) {
-    if (track < 0) {
-      throw new IllegalArgumentException("The track cannot be negative or zero. Please try again.");
+    if (track < 0 || track > 15) {
+      throw new IllegalArgumentException("There are 15 tracks at the station. Please try again with a value between 1 and 15");
     }
     this.track = track;
   }

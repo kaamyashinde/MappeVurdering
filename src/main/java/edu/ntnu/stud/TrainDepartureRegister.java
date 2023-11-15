@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * This file contains the class which handles the register of the train departures - aka the list
@@ -39,10 +41,9 @@ public class TrainDepartureRegister {
    */
   @Override
   public String toString() {
-    StringBuilder result = new StringBuilder();
-    allTrainDepartures.forEach(trains -> result.append(trains.toString()).append("\n"));
-    // return TrainDeparture.getTableHeader() + "\n" + result;
-    return result.toString();
+    return allTrainDepartures.stream()
+        .map(TrainDeparture::toString)
+        .collect(Collectors.joining("\n"));
   }
 
   /** Sort the train departures based on the departure time. */
@@ -57,13 +58,11 @@ public class TrainDepartureRegister {
    * @param theTime the time to check if the train departure is before
    */
   public void removeTrainDepartureBeforeTime(LocalTime theTime) throws IllegalArgumentException {
-    if (theTime == null) {
-      throw new IllegalArgumentException("The time cannot be null");
-    } else if (theTime.isBefore(LocalTime.of(0, 0)) || theTime.isAfter(LocalTime.of(23, 59))) {
+    Objects.requireNonNull(theTime, "The time cannot be null");
+    if (theTime.isBefore(LocalTime.of(0, 0)) || theTime.isAfter(LocalTime.of(23, 59))) {
       throw new DateTimeException("The time must be between 00:00 and 23:59. Please try again.");
     }
-    allTrainDepartures.removeIf(
-        td -> td.getDelayedTime().isBefore(theTime)); // can use this example in report!
+    allTrainDepartures.removeIf(td -> td.getDelayedTime().isBefore(theTime));
   }
 
   /**
@@ -107,15 +106,16 @@ public class TrainDepartureRegister {
    */
   public String getTrainDepartureBasedOnDestination(String destination)
       throws IllegalArgumentException {
-    if (destination == null || destination.isEmpty()) {
-      throw new IllegalArgumentException("The destination cannot be null or empty");
+    Objects.requireNonNull(
+        destination, "The destination cannot be null. Please enter a value for destination");
+    if (destination.isBlank() || destination.isEmpty()) {
+      throw new IllegalArgumentException(
+          "No destination has been detected. Please enter the destination");
     }
-
-    String theDestination = destination.toLowerCase();
 
     List<String> trainDeparturesToSameDestination =
         allTrainDepartures.stream()
-            .filter(td -> td.getDestination().toLowerCase().equals(theDestination))
+            .filter(td -> td.getDestination().equalsIgnoreCase(destination))
             .map(TrainDeparture::toString)
             .toList();
 
@@ -154,12 +154,9 @@ public class TrainDepartureRegister {
     if (trainId < 0) {
       throw new IllegalArgumentException("The train ID cannot be negative");
     }
-    if (trackNum < 1) {
+    if (trackNum < 1 || trackNum > 15) {
       throw new IllegalArgumentException(
-          "The track number cannot be negative or zero. Please choose a track between 1 and 15");
-    } else if (trackNum > 15) {
-      throw new IllegalArgumentException(
-          "There are only 15 tracks at the station. Please choose a track between 1 and 15");
+          "There are 15 tracks at the station. Please enter a value for track between 1 and 15");
     }
     allTrainDepartures.stream()
         .filter(traDep -> traDep.getTrainId() == trainId)

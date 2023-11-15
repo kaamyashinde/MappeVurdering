@@ -76,7 +76,8 @@ class TrainDepartureTest {
       assertThrows(
           DateTimeException.class,
           () -> new TrainDeparture(LocalTime.of(-10, 30), "l", 1, "Oslo", 2, 1));
-      assertThrows(DateTimeException.class, () -> new TrainDeparture(null, "l", 1, "Oslo", 2, 1));
+      assertThrows(
+          NullPointerException.class, () -> new TrainDeparture(null, "l", 1, "Oslo", 2, 1));
     }
 
     /** Testing the train line method with valid input */
@@ -94,7 +95,7 @@ class TrainDepartureTest {
           IllegalArgumentException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), "", 1, "Oslo", 2, 1));
       assertThrows(
-          IllegalArgumentException.class,
+          NullPointerException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), null, 1, "Oslo", 2, 1));
     }
 
@@ -129,7 +130,7 @@ class TrainDepartureTest {
           IllegalArgumentException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), "l", 1, "", 2, 1));
       assertThrows(
-          IllegalArgumentException.class,
+          NullPointerException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), "l", 1, null, 2, 1));
     }
 
