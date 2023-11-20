@@ -56,7 +56,7 @@ public class TrainDeparture {
     }
 
     if (trainId < 1) {
-      throw new IllegalArgumentException("The train id cannot be negative. Please try again.");
+      throw new IllegalArgumentException("The train ID must be a positive whole number.");
     }
     if (destination == null || destination.isBlank()) {
       throw new IllegalArgumentException(
@@ -153,14 +153,14 @@ public class TrainDeparture {
    */
   @Override
   public String toString() {
-    String fDestination =
+    String formattedDestination =
         Character.toUpperCase(destination.charAt(0)) + destination.substring(1).toLowerCase();
     return String.format(
         "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5s |",
         departureTimeFormatted,
         trainLine,
         trainId,
-        fDestination,
+        formattedDestination,
         (delay > 0) ? delayedTime : " ",
         (track == -1) ? " " : track);
   }
