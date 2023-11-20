@@ -3,6 +3,7 @@ package edu.ntnu.stud;
 import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -43,7 +44,32 @@ public class TrainDeparture {
       int delay,
       int track)
       throws IllegalArgumentException {
-    validateInput(departureTime, trainLine, trainId, destination, delay, track);
+    if (departureTime == null
+        || departureTime.isBefore(LocalTime.of(0, 0))
+        || departureTime.isAfter(LocalTime.of(23, 59))) {
+      throw new IllegalArgumentException(
+          "The departure time cannot be null. Please enter a value for departure time");
+    }
+    if (trainLine == null || trainLine.isBlank()) {
+      throw new IllegalArgumentException(
+          "No Train line has been detected. Please enter a value for train line");
+    }
+
+    if (trainId < 1) {
+      throw new IllegalArgumentException("The train id cannot be negative. Please try again.");
+    }
+    if (destination == null || destination.isBlank()) {
+      throw new IllegalArgumentException(
+          "No destination has been detected. Please enter the destination");
+    }
+
+    if (delay < 0) {
+      throw new IllegalArgumentException("The delay cannot be negative. Please try again.");
+    }
+    if (track < -1 || track == 0 || track > 15) {
+      throw new IllegalArgumentException(
+          "There are 15 tracks at the station. Please enter a value for track between 1 and 15");
+    }
     this.departureTime = departureTime;
     this.departureTimeFormatted = this.departureTime.format(DEPARTURE_FORMATTER);
     this.trainLine = trainLine;
@@ -52,55 +78,6 @@ public class TrainDeparture {
     this.delay = delay;
     this.delayedTime = this.departureTime.plusMinutes(delay);
     this.track = track;
-  }
-
-  /**
-   * This method will take in the same parameters as the constructor and validate them by throwing
-   * an error if an Illegal Argument is detected.
-   *
-   * @param departureTime time the train leaves
-   * @param trainLine the name of the train line
-   * @param trainId the unique identifier for the train
-   * @param destination place the train will arrive at
-   * @param delay amount of time the train is delayed
-   * @param track the track the train is on
-   */
-  private void validateInput(
-      LocalTime departureTime,
-      String trainLine,
-      int trainId,
-      String destination,
-      int delay,
-      int track) {
-    Objects.requireNonNull(departureTime, "The time cannot be null. Please enter a value for time");
-    if (departureTime.isBefore(LocalTime.of(0, 0)) || departureTime.isAfter(LocalTime.of(23, 59))) {
-      throw new DateTimeException("The time must be between 00:00 and 23:59. Please try again.");
-    }
-
-    Objects.requireNonNull(
-        trainLine, "The train line cannot be null. Please enter a value for train line");
-    if (trainLine.isBlank() || trainLine.isEmpty()) {
-      throw new IllegalArgumentException(
-          "No Train line has been detected. Please enter a value for train line");
-    }
-
-    if (trainId < 1) {
-      throw new IllegalArgumentException("The train id cannot be negative. Please try again.");
-    }
-
-    Objects.requireNonNull(
-        destination, "The destination cannot be null. Please enter a value for destination");
-    if (destination.isBlank() || destination.isEmpty()) {
-      throw new IllegalArgumentException(
-          "No destination has been detected. Please enter the destination");
-    }
-    if (delay < 0) {
-      throw new IllegalArgumentException("The delay cannot be negative. Please try again.");
-    }
-    if (track < -1 || track == 0 || track > 15) {
-      throw new IllegalArgumentException(
-          "There are 15 tracks at the station. Please enter a value for track between 1 and 15");
-    }
   }
 
   // get methods:
@@ -176,12 +153,14 @@ public class TrainDeparture {
    */
   @Override
   public String toString() {
+    String fDestination =
+        Character.toUpperCase(destination.charAt(0)) + destination.substring(1).toLowerCase();
     return String.format(
         "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5s |",
         departureTimeFormatted,
         trainLine,
         trainId,
-        destination,
+        fDestination,
         (delay > 0) ? delayedTime : " ",
         (track == -1) ? " " : track);
   }
