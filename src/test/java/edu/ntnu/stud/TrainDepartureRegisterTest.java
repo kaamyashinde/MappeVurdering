@@ -113,7 +113,7 @@ class TrainDepartureRegisterTest {
     @DisplayName("Get train departure based on train ID")
     void getTrainDepartureBasedOnTrainId() {
       assertEquals(
-          trainDepartureNumber1, tdr.getTrainDepartureBasedOnTrainId(1));
+          trainDepartureNumber1.toString(), tdr.getTrainDepartureBasedOnTrainId(1));
     }
 
     /**
