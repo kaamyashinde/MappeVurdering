@@ -1,15 +1,15 @@
 package edu.ntnu.stud;
 
-/**
- * This is the main class for the train dispatch application.
- */
+/** This is the main class for the train dispatch application. */
 public class TrainDispatchApp {
 
-  public static void main(String[] args){
-      UserInterFace ui = new UserInterFace();
-      ui.init();
-      ui.start();
+  /**
+   * The main method for the train dispatch application. It creates a new user interface object and
+   * uses it to first initialise the application and then start it.
+   */
+  public static void main(String[] args) {
+    UserInterface ui = new UserInterface();
+    ui.init();
+    ui.start();
   }
-
-
 }

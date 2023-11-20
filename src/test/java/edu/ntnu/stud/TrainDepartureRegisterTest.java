@@ -106,41 +106,14 @@ class TrainDepartureRegisterTest {
   @DisplayName("Testing the getters")
   class TestGetters {
 
-    /**
-     * Testing the get overview method which returns a sorted array list with train departures that
-     * have a track assigned.
-     */
-    @Test
-    @DisplayName("Get overview with track")
-    void getOverviewWithTrack() {
-      assertEquals(
-          "["
-              + trainDepartureNumber1
-              + ", "
-              + trainDepartureNumber4
-              + ", "
-              + trainDepartureNumber2
-              + "]",
-          tdr.getTrainDeparturesWithTrack().toString());
-    }
 
-    /**
-     * Testing the get overview method which returns a sorted array list with train departures that
-     * do not have a track assigned.
-     */
-    @Test
-    @DisplayName("Get overview without track")
-    void getOverviewWithoutTrack() {
-      assertEquals(
-          "[" + trainDepartureNumber3 + "]", tdr.getTrainDeparturesWithoutTrack().toString());
-    }
 
     /** Testing the filtering of the train departures based on the train ID. */
     @Test
     @DisplayName("Get train departure based on train ID")
     void getTrainDepartureBasedOnTrainId() {
       assertEquals(
-          "[" + trainDepartureNumber1 + "]", tdr.getTrainDepartureBasedOnTrainIIIIId(1).toString());
+          trainDepartureNumber1, tdr.getTrainDepartureBasedOnTrainId(1));
     }
 
     /**
@@ -150,7 +123,7 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Error handling of getTrainDepartureBasedOnTrainId")
     void getTrainDepartureBasedOnTrainIdErrorHandling() {
-      assertThrows(IllegalArgumentException.class, () -> tdr.getTrainDepartureBasedOnTrainIIIIId(-1));
+      assertThrows(IllegalArgumentException.class, () -> tdr.getTrainDepartureBasedOnTrainId(-1));
     }
 
     /** Testing the filtering of the train departures based on the destination. */
@@ -183,7 +156,7 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Set delay for a train departure")
     void setDelayThroughRegister() {
-      tdr.setDelayThroughRegister(2, 2);
+      tdr.setDelay(2, 2);
       assertEquals("12:32", trainDepartureNumber2.getDelayedTimeFormatted());
     }
 
@@ -191,15 +164,15 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Error handling of setDelayThroughRegister")
     void setDelayThroughRegisterErrorHandling() {
-      assertThrows(IllegalArgumentException.class, () -> tdr.setDelayThroughRegister(-1, 2));
-      assertThrows(IllegalArgumentException.class, () -> tdr.setDelayThroughRegister(2, -2));
+      assertThrows(IllegalArgumentException.class, () -> tdr.setDelay(-1, 2));
+      assertThrows(IllegalArgumentException.class, () -> tdr.setDelay(2, -2));
     }
 
     /** Testing the setting of the track number for a train departure. */
     @Test
     @DisplayName("Set track number for a train departure")
     void setTrackNumberThroughRegister() {
-      tdr.setTrackNumberThroughRegister(2, 2);
+      tdr.setTrack(2, 2);
       assertEquals(2, trainDepartureNumber2.getTrack());
     }
 
@@ -207,9 +180,9 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Error handling of setTrackNumberThroughRegister")
     void setTrackNumberThroughRegisterErrorHandling() {
-      assertThrows(IllegalArgumentException.class, () -> tdr.setTrackNumberThroughRegister(-1, 2));
-      assertThrows(IllegalArgumentException.class, () -> tdr.setTrackNumberThroughRegister(2, -2));
-      assertThrows(IllegalArgumentException.class, () -> tdr.setTrackNumberThroughRegister(2, 16));
+      assertThrows(IllegalArgumentException.class, () -> tdr.setTrack(-1, 2));
+      assertThrows(IllegalArgumentException.class, () -> tdr.setTrack(2, -2));
+      assertThrows(IllegalArgumentException.class, () -> tdr.setTrack(2, 16));
     }
   }
 }

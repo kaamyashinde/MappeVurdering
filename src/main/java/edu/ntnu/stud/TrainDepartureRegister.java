@@ -4,10 +4,8 @@ import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 /**
  * This file contains the class which handles the register of the train departures - aka the list
  * that contains all the train departures. There are two main get methods that filter the list based
@@ -31,7 +29,6 @@ public class TrainDepartureRegister {
    */
   public void addTrainDeparture(TrainDeparture trainDeparture) {
     allTrainDepartures.add(trainDeparture);
-    this.sortTheTrainDepartureRegister();
   }
 
   /**
@@ -41,14 +38,19 @@ public class TrainDepartureRegister {
    */
   @Override
   public String toString() {
-    return allTrainDepartures.stream()
-        .map(TrainDeparture::toString)
-        .collect(Collectors.joining("\n"));
+    ArrayList<TrainDeparture> sortedRegister = sortTheTrainDepartureRegister(allTrainDepartures);
+    return sortedRegister.stream().map(TrainDeparture::toString).collect(Collectors.joining("\n"));
   }
 
-  /** Sort the train departures based on the departure time. */
-  public void sortTheTrainDepartureRegister() {
-    allTrainDepartures.sort(Comparator.comparing(TrainDeparture::getDepartureTime));
+  /**
+   * Sort the train departures based on the departure time.
+   *
+   * @return the sorted train departures
+   */
+  public ArrayList<TrainDeparture> sortTheTrainDepartureRegister(
+      ArrayList<TrainDeparture> unsortedListOfTrainDepartures) {
+    unsortedListOfTrainDepartures.sort(Comparator.comparing(TrainDeparture::getDepartureTime));
+    return unsortedListOfTrainDepartures;
   }
 
   /**
@@ -57,7 +59,8 @@ public class TrainDepartureRegister {
    *
    * @param theTime the time to check if the train departure is before
    */
-  public void removeTrainDepartureBeforeTime(LocalTime theTime) throws IllegalArgumentException {
+  public void removeTrainDepartureBeforeTime(LocalTime theTime)
+      throws IllegalArgumentException, NullPointerException, DateTimeException {
     Objects.requireNonNull(theTime, "The time cannot be null");
     if (theTime.isBefore(LocalTime.of(0, 0)) || theTime.isAfter(LocalTime.of(23, 59))) {
       throw new DateTimeException("The time must be between 00:00 and 23:59. Please try again.");
@@ -71,57 +74,82 @@ public class TrainDepartureRegister {
    * @param trainIdUnique ID of the train departure
    * @return true if the train departure exists in the register, false otherwise
    */
-  public boolean checkIfExists(int trainIdUnique) throws IllegalArgumentException {
+  public boolean checkIfTrainIdExists(int trainIdUnique) throws IllegalArgumentException {
     if (trainIdUnique < 0) {
       throw new IllegalArgumentException("The train ID cannot be negative");
     }
     return allTrainDepartures.stream().anyMatch(td -> td.getTrainId() == trainIdUnique);
   }
 
-  // get-methods:
   /**
-   * The method filters the list of train departures based on the train ID and returns the train If
-   * none found, it returns null.
+   * The method checks whether or not there is a train that is going to a given destination.
+   *
+   * @param destination the destination to check if there is a train going to
+   * @return true if there is a train going to the destination, false otherwise
+   */
+  public boolean checkIfDestinationExists(String destination)
+      throws IllegalArgumentException, NullPointerException {
+    Objects.requireNonNull(
+        destination, "The destination cannot be null. Please enter a value for destination");
+    if (destination.isBlank()) {
+      throw new IllegalArgumentException(
+          "No destination has been detected. Please enter the destination.");
+    }
+    return allTrainDepartures.stream()
+        .anyMatch(td -> td.getDestination().equalsIgnoreCase(destination));
+  }
+
+  /** An iterator to iterate through a given list of train departures and printing them out. */
+  public String sortAndReturnString(ArrayList<TrainDeparture> trainDepartures) {
+    sortTheTrainDepartureRegister(trainDepartures);
+    return trainDepartures.stream().map(TrainDeparture::toString).collect(Collectors.joining("\n"));
+  }
+
+  // get-methods:
+
+  /**
+   * Method filters the original list for the trainId sepcified and returns the train departure
+   * matching the trainId.
    *
    * @param trainId ID of the train being searched for
-   * @return the train departure based on the train id as a string
+   * @return the train departure object with the specific train ID as a string
    */
   public String getTrainDepartureBasedOnTrainId(int trainId) throws IllegalArgumentException {
-    if (trainId < 0) {
-      throw new IllegalArgumentException("The train ID cannot be negative");
+    if (trainId < 1) {
+      throw new IllegalArgumentException("The train ID must be a positive whole number");
     }
     return allTrainDepartures.stream()
         .filter(td -> td.getTrainId() == trainId)
-        .findFirst()
         .map(TrainDeparture::toString)
-        .orElse(null);
+        .collect(Collectors.joining("\n"));
   }
 
   /**
-   * The method filters the list of train departures based on the destination and returns the train
-   * departures If none found, it returns null.
+   * Make a copy of the list of train departures and remove all the train departures that are not
+   * going to the destination specified.
    *
    * @param destination to identify the train departure that is being searched for
-   * @return the train departure based on the destination as a string
+   * @return arrayList of objects with specific destination attribute
    */
-  public String getTrainDepartureBasedOnDestination(String destination)
-      throws IllegalArgumentException {
+  public ArrayList<TrainDeparture> getDeparturesBasedOnDestination(String destination)
+      throws IllegalArgumentException, NullPointerException {
     Objects.requireNonNull(
         destination, "The destination cannot be null. Please enter a value for destination");
     if (destination.isBlank() || destination.isEmpty()) {
       throw new IllegalArgumentException(
           "No destination has been detected. Please enter the destination");
     }
+    ArrayList<TrainDeparture> copyOfAllTrainDepartures = new ArrayList<>(allTrainDepartures);
+    copyOfAllTrainDepartures.removeIf(td -> !td.getDestination().equalsIgnoreCase(destination));
+    return copyOfAllTrainDepartures;
+  }
 
-    List<String> trainDeparturesToSameDestination =
-        allTrainDepartures.stream()
-            .filter(td -> td.getDestination().equalsIgnoreCase(destination))
-            .map(TrainDeparture::toString)
-            .toList();
-
-    return (trainDeparturesToSameDestination.isEmpty())
-        ? null
-        : String.join("\n", trainDeparturesToSameDestination);
+  /** Returns a list of destinations to help during filtering. */
+  public String getDestinations() {
+    return allTrainDepartures.stream()
+        .map(TrainDeparture::getDestination)
+        .distinct()
+        .collect(Collectors.joining(" | "));
   }
 
   // set-methods:
@@ -131,7 +159,7 @@ public class TrainDepartureRegister {
    * @param trainId unique identifier of the train departure
    * @param delay the delay in minutes
    */
-  public void setDelayThroughRegister(int trainId, int delay) {
+  public void setDelay(int trainId, int delay) {
     if (trainId < 0) {
       throw new IllegalArgumentException("The train ID cannot be negative");
     }
@@ -149,14 +177,14 @@ public class TrainDepartureRegister {
    * @param trainId unique identifier of the train departure
    * @param trackNum the track number
    */
-  public void setTrackNumberThroughRegister(int trainId, int trackNum)
-      throws IllegalArgumentException {
-    if (trainId < 0) {
-      throw new IllegalArgumentException("The train ID cannot be negative");
+  public void setTrack(int trainId, int trackNum) throws IllegalArgumentException {
+    if (trainId < 1) {
+      throw new IllegalArgumentException(
+          "The train must have a positive ID number. Please try again.");
     }
     if (trackNum < 1 || trackNum > 15) {
       throw new IllegalArgumentException(
-          "There are 15 tracks at the station. Please enter a value for track between 1 and 15");
+          "Please choose between track 1 and 15.");
     }
     allTrainDepartures.stream()
         .filter(traDep -> traDep.getTrainId() == trainId)
