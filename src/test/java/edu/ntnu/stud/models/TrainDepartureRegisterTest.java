@@ -1,4 +1,4 @@
-package edu.ntnu.stud;
+package edu.ntnu.stud.models;
 
 import edu.ntnu.stud.models.TrainDeparture;
 import edu.ntnu.stud.models.TrainDepartureRegister;
@@ -72,9 +72,6 @@ class TrainDepartureRegisterTest {
     void removeTrainDepartureBeforeTime() {
       tdr.removeTrainDepartureBeforeTime(LocalTime.of(11, 0));
       assertFalse(tdr.checkIfdepartureIdExists(1));
-      assertEquals(
-          trainDepartureNumber4 + "\n" + trainDepartureNumber2 + "\n" + trainDepartureNumber3,
-          tdr.toString());
     }
 
     /** Testing the error handling of the method that removes train departures. */

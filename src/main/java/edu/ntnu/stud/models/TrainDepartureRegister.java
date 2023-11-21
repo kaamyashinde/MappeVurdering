@@ -1,4 +1,6 @@
-package edu.ntnu.stud;
+package edu.ntnu.stud.models;
+
+import edu.ntnu.stud.utils.ParameterValidation;
 
 import java.time.DateTimeException;
 import java.time.LocalTime;
@@ -6,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 /**
  * This file contains the class which handles the register of the train departures - aka the list
  * that contains all the train departures. There are two main get methods that filter the list based
@@ -18,8 +21,7 @@ public class TrainDepartureRegister {
   private final ArrayList<TrainDeparture> allTrainDepartures = new ArrayList<>();
 
   // constructor to initialize the train departure register
-  public TrainDepartureRegister() {
-  }
+  public TrainDepartureRegister() {}
 
   /**
    * The method adds the train departure to the register.
@@ -74,9 +76,7 @@ public class TrainDepartureRegister {
    * @return true if the train departure exists in the register, false otherwise
    */
   public boolean checkIfdepartureIdExists(int departureIdUnique) throws IllegalArgumentException {
-    if (departureIdUnique < 0) {
-      throw new IllegalArgumentException("The train ID cannot be negative");
-    }
+    ParameterValidation.positiveIntegerValidation(departureIdUnique, "The train ID cannot be negative");
     return allTrainDepartures.stream().anyMatch(td -> td.getDepartureId() == departureIdUnique);
   }
 
@@ -86,21 +86,11 @@ public class TrainDepartureRegister {
    * @param destination the destination to check if there is a train going to
    * @return true if there is a train going to the destination, false otherwise
    */
-  public boolean checkIfDestinationExists(String destination)
-      throws IllegalArgumentException, NullPointerException {
-    Objects.requireNonNull(
-        destination, "The destination cannot be null. Please enter a value for destination");
-    if (destination.isBlank()) {
-      throw new IllegalArgumentException(
-          "No destination has been detected. Please enter the destination.");
-    }
+  public boolean checkIfDestinationExists(String destination) throws IllegalArgumentException {
+    ParameterValidation.notBlankValidation(destination, "No destination has been detected. Please try again.");
     return allTrainDepartures.stream()
         .anyMatch(td -> td.getDestination().equalsIgnoreCase(destination));
   }
-
-
-
-  // get-methods:
 
   /**
    * Method filters the original list for the departureId sepcified and returns the train departure
@@ -109,10 +99,9 @@ public class TrainDepartureRegister {
    * @param departureId ID of the train being searched for
    * @return the train departure object with the specific train ID as a string
    */
-  public String getTrainDepartureBasedOndepartureId(int departureId) throws IllegalArgumentException {
-    if (departureId < 1) {
-      throw new IllegalArgumentException("The train ID must be a positive whole number");
-    }
+  public String getTrainDepartureBasedOndepartureId(int departureId)
+      throws IllegalArgumentException {
+    ParameterValidation.positiveIntegerValidation(departureId, "The train ID cannot be negative");
     return allTrainDepartures.stream()
         .filter(td -> td.getDepartureId() == departureId)
         .map(TrainDeparture::toString)
@@ -128,14 +117,11 @@ public class TrainDepartureRegister {
    */
   public ArrayList<TrainDeparture> getDeparturesBasedOnDestination(String destination)
       throws IllegalArgumentException, NullPointerException {
-    Objects.requireNonNull(
-        destination, "The destination cannot be null. Please enter a value for destination");
-    if (destination.isBlank() || destination.isEmpty()) {
-      throw new IllegalArgumentException(
-          "No destination has been detected. Please enter the destination");
-    }
-    ArrayList<TrainDeparture> copyOfAllTrainDepartures = new ArrayList<>(allTrainDepartures);
-    copyOfAllTrainDepartures.removeIf(td -> !td.getDestination().equalsIgnoreCase(destination));
+    ParameterValidation.notBlankValidation(
+        destination, "No destination has been detected. Please enter the destination");
+    ArrayList<TrainDeparture> copyOfAllTrainDepartures =new ArrayList<>();
+    allTrainDepartures.forEach(trainDeparture -> copyOfAllTrainDepartures.add(new TrainDeparture(trainDeparture)));
+    copyOfAllTrainDepartures.removeIf(td -> !td.getDestination().equalsIgnoreCase(destination)); //deep copies for life!
     return copyOfAllTrainDepartures;
   }
 
@@ -155,12 +141,8 @@ public class TrainDepartureRegister {
    * @param delay the delay in minutes
    */
   public void setDelay(int departureId, int delay) {
-    if (departureId < 0) {
-      throw new IllegalArgumentException("The train ID cannot be negative");
-    }
-    if (delay < 0) {
-      throw new IllegalArgumentException("The delay cannot be negative");
-    }
+    ParameterValidation.positiveIntegerValidation(departureId, "The train ID cannot be negative");
+    ParameterValidation.positiveIntegerValidation(delay, "The delay cannot be negative");
     allTrainDepartures.stream()
         .filter(traDep -> traDep.getDepartureId() == departureId)
         .forEach(traDep -> traDep.setDelayAndDelayTime(delay));
@@ -173,14 +155,9 @@ public class TrainDepartureRegister {
    * @param trackNum the track number
    */
   public void setTrack(int departureId, int trackNum) throws IllegalArgumentException {
-    if (departureId < 1) {
-      throw new IllegalArgumentException(
-          "The train must have a positive ID number. Please try again.");
-    }
-    if (trackNum < 1 || trackNum > 15) {
-      throw new IllegalArgumentException(
-          "Please choose between track 1 and 15.");
-    }
+    ParameterValidation.positiveIntegerValidation(departureId, "The train ID cannot be negative");
+    ParameterValidation.validateTrack(trackNum,
+            "There are 15 tracks at the station. Please enter a value for track between 1 and 15");
     allTrainDepartures.stream()
         .filter(traDep -> traDep.getDepartureId() == departureId)
         .forEach(traDep -> traDep.setTrack(trackNum));
