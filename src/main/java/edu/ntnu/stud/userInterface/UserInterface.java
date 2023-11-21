@@ -1,4 +1,8 @@
-package edu.ntnu.stud;
+package edu.ntnu.stud.userInterface;
+
+import edu.ntnu.stud.models.TrainDeparture;
+import edu.ntnu.stud.models.TrainDepartureRegister;
+import edu.ntnu.stud.utils.Sorting;
 
 import java.time.DateTimeException;
 import java.time.LocalTime;
@@ -299,7 +303,7 @@ public class UserInterface {
     if (exists) {
       System.out.println("Here are the departures going to " + destination + ":");
       String tableContent =
-              Utils.sortAndReturnString(
+              Sorting.sortAndReturnString(
                   kristiansand.getDeparturesBasedOnDestination(destination));
       System.out.println(HEADER + "\n" + tableContent + "\n" + SEPARATOR);
 
