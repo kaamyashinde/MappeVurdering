@@ -1,4 +1,6 @@
-package edu.ntnu.stud;
+package edu.ntnu.stud.models;
+
+import edu.ntnu.stud.utils.ParameterValidation;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -15,34 +17,24 @@ import java.util.Objects;
  * <p><strong>Note:</strong>This class does not perform input validation.
  */
 public class TrainDeparture {
-  /** Departure time for the train. */
   private final LocalTime departureTime;
 
-  /** Departure time formatted as string. */
   private final String departureTimeFormatted;
 
-  /** Name of the train line. */
   private final String trainLine;
 
-  /** Unique identifier for the train. */
   private final int departureId;
 
-  /** Place the train will arrive at. */
   private final String destination;
 
-  /** Amount of time the train is delayed by. */
   private int delay;
 
-  /** Departure time plus the delay. */
   private LocalTime delayedTime;
 
-  /** The track the train is on. */
   private int track;
 
-  /** The formatter for the delay time. */
   private static final DateTimeFormatter DELAY_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-  /** The formatter for the departure time. */
   private static final DateTimeFormatter DEPARTURE_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
   /**
@@ -67,18 +59,12 @@ public class TrainDeparture {
       throw new NullPointerException(
           "The departure time cannot be null. Please enter a value for departure time");
     }
-    if (trainLine.isBlank()) {
-      throw new IllegalArgumentException(
-          "No Train line has been detected. Please enter a value for train line");
-    }
-
-    if (departureId < 1) {
-      throw new IllegalArgumentException("The train ID must be a positive whole number.");
-    }
-    if (destination.isBlank()) {
-      throw new IllegalArgumentException(
-          "No destination has been detected. Please enter the destination");
-    }
+    ParameterValidation.notBlankValidation(
+        trainLine, "No Train line has been detected. Please enter a value for train line");
+    ParameterValidation.notBlankValidation(
+        destination, "No destination has been detected. Please enter the destination");
+    ParameterValidation.positiveIntegerValidation(
+        departureId, "The departure ID cannot be negative");
     this.departureTime = departureTime;
     this.departureTimeFormatted = this.departureTime.format(DEPARTURE_FORMATTER);
     this.trainLine = trainLine;
@@ -86,6 +72,18 @@ public class TrainDeparture {
     this.destination = destination;
     setDelayAndDelayTime(delay);
     setTrack(track);
+  }
+
+  // Copy constructor params TrainDeparture
+  public TrainDeparture(TrainDeparture trainDeparture) {
+    this.departureTime = trainDeparture.departureTime;
+    this.departureTimeFormatted = trainDeparture.departureTimeFormatted;
+    this.trainLine = trainDeparture.trainLine;
+    this.departureId = trainDeparture.departureId;
+    this.destination = trainDeparture.destination;
+    this.delay = trainDeparture.delay;
+    this.delayedTime = trainDeparture.delayedTime;
+    this.track = trainDeparture.track;
   }
 
   /**
@@ -176,9 +174,7 @@ public class TrainDeparture {
    * @throws IllegalArgumentException if the delay is negative
    */
   public void setDelayAndDelayTime(int newDelay) {
-    if (newDelay < 0) {
-      throw new IllegalArgumentException("The delay must be a positive whole number.");
-    }
+    ParameterValidation.positiveIntegerValidation(newDelay, "The delay cannot be negative");
     this.delay = newDelay;
     this.delayedTime = departureTime.plusMinutes(delay);
   }
@@ -190,10 +186,9 @@ public class TrainDeparture {
    * @throws IllegalArgumentException if the track number is not between 1 and 15
    */
   public void setTrack(int track) {
-    if (track < -1 || track == 0 || track > 15) {
-      throw new IllegalArgumentException(
-          "There are 15 tracks at the station. Please enter a value for track between 1 and 15");
-    }
+    ParameterValidation.validateTrack(
+        track,
+        "There are 15 tracks at the station. Please enter a value for track between 1 and 15");
     this.track = track;
   }
 
@@ -214,18 +209,5 @@ public class TrainDeparture {
         formattedDestination,
         (delay > 0) ? delayedTime : " ",
         (track == -1) ? " " : track);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    TrainDeparture that = (TrainDeparture) o;
-    return departureId == that.departureId;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(departureId);
   }
 }

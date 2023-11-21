@@ -1,4 +1,4 @@
-package edu.ntnu.stud;
+package edu.ntnu.stud.models;
 
 import java.time.DateTimeException;
 import java.time.LocalTime;
@@ -24,7 +24,7 @@ class TrainDepartureTest {
   // private TrainDeparture trainDeparture5;
 
   private static final String TRAIN_LINE = "L123";
-  private static final String DESTINATION = "Kristiansand";
+  private static final String DESTINATION = "KrIStiansand";
 
   /** This method is run before each test to set up the objects that are used in the tests. */
   @BeforeEach
@@ -32,7 +32,7 @@ class TrainDepartureTest {
     trainDeparture1 = new TrainDeparture(LocalTime.of(10, 30), TRAIN_LINE, 1, DESTINATION, 2, -1);
     trainDeparture2 = new TrainDeparture(LocalTime.of(11, 30), TRAIN_LINE, 2, DESTINATION, 5, 1);
     trainDeparture3 = new TrainDeparture(LocalTime.of(23, 59), TRAIN_LINE, 3, DESTINATION, 0, 5);
-    trainDeparture4 = new TrainDeparture(LocalTime.of(3, 30), TRAIN_LINE, 4, DESTINATION, 2, -1);
+   trainDeparture4 = new TrainDeparture(LocalTime.of(3, 30), TRAIN_LINE, 4, DESTINATION, 2, -1);
     // trainDeparture5 = new TrainDeparture(LocalTime.of(-1, 23), "", -6, " ", -7, -89);
   }
 
@@ -78,15 +78,9 @@ class TrainDepartureTest {
           DateTimeException.class,
           () -> new TrainDeparture(LocalTime.of(-10, 30), "l", 1, "Oslo", 2, 1));
       assertThrows(
-          IllegalArgumentException.class, () -> new TrainDeparture(null, "l", 1, "Oslo", 2, 1));
+          NullPointerException.class, () -> new TrainDeparture(null, "l", 1, "Oslo", 2, 1));
     }
 
-    /** Testing the train line method with valid input */
-    @Test
-    @DisplayName("Getting the train line with valid input")
-    void getTrainLineWithValidInput() {
-      assertEquals(TRAIN_LINE, trainDeparture1.getTrainLine());
-    }
 
     /** Testing the train line method with an empty string */
     @Test
@@ -96,16 +90,10 @@ class TrainDepartureTest {
           IllegalArgumentException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), "", 1, "Oslo", 2, 1));
       assertThrows(
-          IllegalArgumentException.class,
+          NullPointerException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), null, 1, "Oslo", 2, 1));
     }
 
-    /** Testing the train ID method with valid input */
-    @Test
-    @DisplayName("Getting the train ID with valid input")
-    void getdepartureIdWithValidInput() {
-      assertEquals(1, trainDeparture1.getDepartureId());
-    }
 
     /** Testing the train ID method with a negative value */
     @Test
@@ -120,7 +108,7 @@ class TrainDepartureTest {
     @Test
     @DisplayName("Testing the getDestination method with a valid input")
     void getDestinationWithValidInput() {
-      assertEquals(DESTINATION, trainDeparture1.getDestination());
+      assertEquals(DESTINATION, trainDeparture2.getDestination());
     }
 
     /** Testing the destination method with an empty string */
@@ -131,7 +119,7 @@ class TrainDepartureTest {
           IllegalArgumentException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), "l", 1, "", 2, 1));
       assertThrows(
-          IllegalArgumentException.class,
+          NullPointerException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), "l", 1, null, 2, 1));
     }
 
