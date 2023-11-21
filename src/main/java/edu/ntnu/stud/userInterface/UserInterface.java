@@ -2,6 +2,7 @@ package edu.ntnu.stud;
 
 import java.time.DateTimeException;
 import java.time.LocalTime;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -95,16 +96,16 @@ public class UserInterface {
   private int showMenuAndGetChoice() {
     System.out.println(
         """
-                    ------------MENU----------
-                    0. QUIT
-                    1. Overview of departures
-                    2. Add a departure
-                    3. Find a departure
-                    4. Filter by Destination
-                    5. Assign a track
-                    6. Add delay
-                    7. Update Time
-                    --------------------------
+                ------------MENU----------
+                0. QUIT
+                1. Overview of departures
+                2. Add a departure
+                3. Find a departure
+                4. Filter by Destination
+                5. Assign a track
+                6. Add delay
+                7. Update Time
+                --------------------------
                 """);
 
     return getIntInput(input);
@@ -158,17 +159,23 @@ public class UserInterface {
   public void addDeparture() {
     try {
       LocalTime depTime = getLocalTimeToAddToDeparture();
+      System.out.println("-> Departure Time registered. It is " + depTime + ".");
       String depLine =
           getStringInputToAddToDeparture(
               "Enter the line of the train in the form F12 (a capital letter + two numbers): ", 2);
-      int depTrainId = getIntToAddDeparture(2);
+      System.out.println("-> Train line registered. It is " + depLine + ".");
+      int depdepartureId = getIntToAddDeparture(2);
+      System.out.println("-> Train ID registered. It is " + depdepartureId + ".");
       String depDestination =
           getStringInputToAddToDeparture("Enter the destination of the train: ", 1);
+      System.out.println("-> Destination registered. It is " + depDestination + ".");
       int depDelay = getIntToAddDeparture(1);
+      System.out.println("-> Delay registered. It is " + depDelay + ".");
       int depTrack = getIntToAddDeparture(3);
+      System.out.println("-> Track registered. It is " + depTrack + ".");
 
       kristiansand.addTrainDeparture(
-          new TrainDeparture(depTime, depLine, depTrainId, depDestination, depDelay, depTrack));
+          new TrainDeparture(depTime, depLine, depdepartureId, depDestination, depDelay, depTrack));
     } catch (IllegalArgumentException | DateTimeException e) {
       System.out.println(e.getMessage());
     }
@@ -188,19 +195,19 @@ public class UserInterface {
         }
         norm = depDelay;
       }
-      case 2 -> { // trainID
-        int depTrainId = 0;
+      case 2 -> { // departureId
+        int depdepartureId = 0;
         boolean exists = true;
         while (exists) {
           System.out.println("What is the unique Train id?");
-          depTrainId = getIntInput(input);
-          exists = kristiansand.checkIfTrainIdExists(depTrainId);
+          depdepartureId = getIntInput(input);
+          exists = kristiansand.checkIfdepartureIdExists(depdepartureId);
 
           if (exists) {
             System.out.println("There is already a train with this id. Please try again");
           }
         }
-        norm = depTrainId;
+        norm = depdepartureId;
       }
       case 3 -> { // track number
         System.out.println("Is the departure assigned a track? (0: yes, 1: no");
@@ -267,14 +274,14 @@ public class UserInterface {
   public void getTrainDeparturesByIdMenu() {
 
     System.out.println("What is the ID of the train that you want to search for?");
-    int trainId = getIntInput(input);
-    boolean exists = checkIfTrainIdExists(trainId);
+    int departureId = getIntInput(input);
+    boolean exists = checkIfdepartureIdExists(departureId);
     if (exists) {
-      System.out.println("Here is the departure with the train ID " + trainId + ":");
+      System.out.println("Here is the departure with the train ID " + departureId + ":");
       System.out.println(
-          HEADER + "\n" + kristiansand.getTrainDepartureBasedOnTrainId(trainId) + "\n" + SEPARATOR);
+          HEADER + "\n" + kristiansand.getTrainDepartureBasedOndepartureId(departureId) + "\n" + SEPARATOR);
     } else {
-      System.out.println("There is no departure with the train ID " + trainId + ".");
+      System.out.println("There is no departure with the train ID " + departureId + ".");
     }
   }
 
@@ -292,8 +299,8 @@ public class UserInterface {
     if (exists) {
       System.out.println("Here are the departures going to " + destination + ":");
       String tableContent =
-          kristiansand.sortAndReturnString(
-              kristiansand.getDeparturesBasedOnDestination(destination));
+              Utils.sortAndReturnString(
+                  kristiansand.getDeparturesBasedOnDestination(destination));
       System.out.println(HEADER + "\n" + tableContent + "\n" + SEPARATOR);
 
     } else {
@@ -307,11 +314,11 @@ public class UserInterface {
    */
   public void assignTrack() {
     System.out.println("What is the train Id of the train that you want to assign a track to?");
-    int trainId = getIntInput(input);
-    if (checkIfTrainIdExists(trainId)) {
+    int departureId = getIntInput(input);
+    if (checkIfdepartureIdExists(departureId)) {
       System.out.println("What is the track number?");
       int track = getIntInput(input);
-      kristiansand.setTrack(trainId, track);
+      kristiansand.setTrack(departureId, track);
     } else {
       System.out.println("The train ID does not exist.");
     }
@@ -323,11 +330,11 @@ public class UserInterface {
    */
   public void updateDelay() {
     System.out.println("What is the train Id of the train that you want to update the delay of?");
-    int trainId = getIntInput(input);
-    if (checkIfTrainIdExists(trainId)) {
+    int departureId = getIntInput(input);
+    if (checkIfdepartureIdExists(departureId)) {
       System.out.println("What is the delay in minutes?");
       int delay = getIntInput(input);
-      kristiansand.setDelay(trainId, delay);
+      kristiansand.setDelay(departureId, delay);
     } else {
       System.out.println("The train ID does not exist.");
     }
@@ -362,11 +369,11 @@ public class UserInterface {
    * This method is used to check if a train id exists in the register. This method is used
    * throughout the other methods to check if the train id exists before performing an action.
    *
-   * @param trainId unique identifier of the train departure
+   * @param departureId unique identifier of the train departure
    * @return true if the train id exists, false if it does not
    */
-  public boolean checkIfTrainIdExists(int trainId) {
-    return kristiansand.checkIfTrainIdExists(trainId);
+  public boolean checkIfdepartureIdExists(int departureId) {
+    return kristiansand.checkIfdepartureIdExists(departureId);
   }
 
   /**
@@ -379,9 +386,9 @@ public class UserInterface {
     while (true) {
       try {
         return input.nextInt();
-      } catch (java.util.InputMismatchException e) {
-        System.out.println("You must enter a whole number. Please try again.");
-        input.nextLine(); // Consume the invalid input
+      } catch (InputMismatchException e) {
+        System.out.println("The input must be an integer. Try again.");
+        input.nextLine();
       }
     }
   }

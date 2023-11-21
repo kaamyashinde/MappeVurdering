@@ -3,6 +3,7 @@ package edu.ntnu.stud;
 import java.time.DateTimeException;
 import java.time.LocalTime;
 
+import edu.ntnu.stud.models.TrainDeparture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -102,14 +103,14 @@ class TrainDepartureTest {
     /** Testing the train ID method with valid input */
     @Test
     @DisplayName("Getting the train ID with valid input")
-    void getTrainIdWithValidInput() {
-      assertEquals(1, trainDeparture1.getTrainId());
+    void getdepartureIdWithValidInput() {
+      assertEquals(1, trainDeparture1.getDepartureId());
     }
 
     /** Testing the train ID method with a negative value */
     @Test
     @DisplayName("Getting the train ID with invalid input")
-    void getTrainIdWithInvalidInput() {
+    void getdepartureIdWithInvalidInput() {
       assertThrows(
           IllegalArgumentException.class,
           () -> new TrainDeparture(LocalTime.of(10, 30), "l", -9, "Oslo", 2, 1));

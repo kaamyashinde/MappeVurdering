@@ -15,11 +15,10 @@ import java.util.stream.Collectors;
  * add a new train departure to the list.
  */
 public class TrainDepartureRegister {
-  ArrayList<TrainDeparture> allTrainDepartures;
+  private final ArrayList<TrainDeparture> allTrainDepartures = new ArrayList<>();
 
   // constructor to initialize the train departure register
   public TrainDepartureRegister() {
-    allTrainDepartures = new ArrayList<>();
   }
 
   /**
@@ -38,7 +37,7 @@ public class TrainDepartureRegister {
    */
   @Override
   public String toString() {
-    ArrayList<TrainDeparture> sortedRegister = sortTheTrainDepartureRegister(allTrainDepartures);
+    ArrayList<TrainDeparture> sortedRegister = sortTheTrainDepartureRegister();
     return sortedRegister.stream().map(TrainDeparture::toString).collect(Collectors.joining("\n"));
   }
 
@@ -47,8 +46,8 @@ public class TrainDepartureRegister {
    *
    * @return the sorted train departures
    */
-  public ArrayList<TrainDeparture> sortTheTrainDepartureRegister(
-      ArrayList<TrainDeparture> unsortedListOfTrainDepartures) {
+  public ArrayList<TrainDeparture> sortTheTrainDepartureRegister() {
+    ArrayList<TrainDeparture> unsortedListOfTrainDepartures = new ArrayList<>(allTrainDepartures);
     unsortedListOfTrainDepartures.sort(Comparator.comparing(TrainDeparture::getDepartureTime));
     return unsortedListOfTrainDepartures;
   }
@@ -71,14 +70,14 @@ public class TrainDepartureRegister {
   /**
    * The method checks whether the train ID is taken by another train departure in the register.
    *
-   * @param trainIdUnique ID of the train departure
+   * @param departureIdUnique ID of the train departure
    * @return true if the train departure exists in the register, false otherwise
    */
-  public boolean checkIfTrainIdExists(int trainIdUnique) throws IllegalArgumentException {
-    if (trainIdUnique < 0) {
+  public boolean checkIfdepartureIdExists(int departureIdUnique) throws IllegalArgumentException {
+    if (departureIdUnique < 0) {
       throw new IllegalArgumentException("The train ID cannot be negative");
     }
-    return allTrainDepartures.stream().anyMatch(td -> td.getTrainId() == trainIdUnique);
+    return allTrainDepartures.stream().anyMatch(td -> td.getDepartureId() == departureIdUnique);
   }
 
   /**
@@ -99,27 +98,23 @@ public class TrainDepartureRegister {
         .anyMatch(td -> td.getDestination().equalsIgnoreCase(destination));
   }
 
-  /** An iterator to iterate through a given list of train departures and printing them out. */
-  public String sortAndReturnString(ArrayList<TrainDeparture> trainDepartures) {
-    sortTheTrainDepartureRegister(trainDepartures);
-    return trainDepartures.stream().map(TrainDeparture::toString).collect(Collectors.joining("\n"));
-  }
+
 
   // get-methods:
 
   /**
-   * Method filters the original list for the trainId sepcified and returns the train departure
-   * matching the trainId.
+   * Method filters the original list for the departureId sepcified and returns the train departure
+   * matching the departureId.
    *
-   * @param trainId ID of the train being searched for
+   * @param departureId ID of the train being searched for
    * @return the train departure object with the specific train ID as a string
    */
-  public String getTrainDepartureBasedOnTrainId(int trainId) throws IllegalArgumentException {
-    if (trainId < 1) {
+  public String getTrainDepartureBasedOndepartureId(int departureId) throws IllegalArgumentException {
+    if (departureId < 1) {
       throw new IllegalArgumentException("The train ID must be a positive whole number");
     }
     return allTrainDepartures.stream()
-        .filter(td -> td.getTrainId() == trainId)
+        .filter(td -> td.getDepartureId() == departureId)
         .map(TrainDeparture::toString)
         .collect(Collectors.joining("\n"));
   }
@@ -156,29 +151,29 @@ public class TrainDepartureRegister {
   /**
    * The method sets the delay for a train departure based on the train ID.
    *
-   * @param trainId unique identifier of the train departure
+   * @param departureId unique identifier of the train departure
    * @param delay the delay in minutes
    */
-  public void setDelay(int trainId, int delay) {
-    if (trainId < 0) {
+  public void setDelay(int departureId, int delay) {
+    if (departureId < 0) {
       throw new IllegalArgumentException("The train ID cannot be negative");
     }
     if (delay < 0) {
       throw new IllegalArgumentException("The delay cannot be negative");
     }
     allTrainDepartures.stream()
-        .filter(traDep -> traDep.getTrainId() == trainId)
+        .filter(traDep -> traDep.getDepartureId() == departureId)
         .forEach(traDep -> traDep.setDelayAndDelayTime(delay));
   }
 
   /**
    * The method sets the track number for a train departure based on the train ID.
    *
-   * @param trainId unique identifier of the train departure
+   * @param departureId unique identifier of the train departure
    * @param trackNum the track number
    */
-  public void setTrack(int trainId, int trackNum) throws IllegalArgumentException {
-    if (trainId < 1) {
+  public void setTrack(int departureId, int trackNum) throws IllegalArgumentException {
+    if (departureId < 1) {
       throw new IllegalArgumentException(
           "The train must have a positive ID number. Please try again.");
     }
@@ -187,7 +182,7 @@ public class TrainDepartureRegister {
           "Please choose between track 1 and 15.");
     }
     allTrainDepartures.stream()
-        .filter(traDep -> traDep.getTrainId() == trainId)
+        .filter(traDep -> traDep.getDepartureId() == departureId)
         .forEach(traDep -> traDep.setTrack(trackNum));
   }
 }
