@@ -1,11 +1,11 @@
 package edu.ntnu.stud;
 
-import org.apache.commons.lang3.StringUtils;
+import edu.ntnu.stud.models.TrainDeparture;
+import edu.ntnu.stud.models.TrainDepartureRegister;
 
-import java.sql.SQLOutput;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.util.Scanner;
 
 public class TestingRandomPiecesOfCode {
 
@@ -80,34 +80,63 @@ public class TestingRandomPiecesOfCode {
   }
 
   public static void register() {
-    TrainDepartureRegister newRegister = new TrainDepartureRegister();
+    /*TrainDepartureRegister newRegister = new TrainDepartureRegister();
     TrainDeparture td1 = new TrainDeparture(LocalTime.of(10, 30), "test", 1, "test", 1, 3);
     TrainDeparture td2 = new TrainDeparture(LocalTime.of(12, 30), "test", 2, "test", 0, 2);
     TrainDeparture td3 = new TrainDeparture(LocalTime.of(15, 30), "test", 3, "test", 0, -1);
 
     newRegister.addTrainDeparture(td1);
     newRegister.addTrainDeparture(td2);
-    newRegister.addTrainDeparture(td3);
+    newRegister.addTrainDeparture(td3);*/
 
-    System.out.println(newRegister.toString());
+    //System.out.println(newRegister.toString());
   }
 
   public static void main(String[] args) {
+Scanner input = new Scanner(System.in);
+int hour = getIntt(input);
 
-    // TestingRandomPiecesOfCode newCode = new TestingRandomPiecesOfCode(" ", 1000);
-    // LocalTime newTime = LocalTime.of(10, 30);
-    // TestingRandomPiecesOfCode cd = new TestingRandomPiecesOfCode(null, 3);
-    TrainDepartureRegister kristiansand = new TrainDepartureRegister();
 
-    kristiansand.addTrainDeparture(
-        new TrainDeparture(LocalTime.of(10, 0), "F2", 2, "Stavanger", 0, 2));
-    kristiansand.addTrainDeparture(
-        new TrainDeparture(LocalTime.of(12, 20), "F3", 4, "Bergen", 0, -1));
-    // System.out.println(kristiansand.makeItStringy(kristiansand.showDeparturesThroughDestination("stavanger")));
-
-      System.out.println(StringUtils.center("Departure Time", 15) + StringUtils.center("Destination", 20) + StringUtils.center("Platform", 10));
-    System.out.println(StringUtils.center("Departure Time", 15) + StringUtils.left("Destination", 20) + StringUtils.right("Platform", 10));
 
 
   }
+
+  public static int getIntt(Scanner input) {
+    int num = 0;
+    for (int i = 3; i > 0; i--) {
+      if (input.hasNextInt()) {
+        num = input.nextInt();
+        break;
+      } else if (i == 1) {
+        System.out.println("too many failed attempts");
+        num = -1;
+      } else {
+        System.out.println("invalid input. attempts remaining: " + (i - 1));
+        input.next(); //consume invalid attempt
+      }
+    }
+    return num;
+  }
+
+  public static int getInt(Scanner input) {
+    int num = 0;
+    int attempts = 3;
+
+    while (attempts > 0) {
+      if (input.hasNextInt()) {
+        num = input.nextInt();
+        break;
+      } else if (attempts == 1) {
+        System.out.println("Too many failed attempts");
+        num = -1;
+        break;
+      } else {
+        System.out.println("Invalid input. Attempts remaining: " + (attempts - 1));
+        input.next(); // Consume the invalid input to avoid an infinite loop
+        attempts--;
+      }
+    }
+    return num;
+  }
+
 }
