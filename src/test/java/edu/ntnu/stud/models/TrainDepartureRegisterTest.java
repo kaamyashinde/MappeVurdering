@@ -1,7 +1,5 @@
 package edu.ntnu.stud.models;
 
-import edu.ntnu.stud.models.TrainDeparture;
-import edu.ntnu.stud.models.TrainDepartureRegister;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -43,7 +41,7 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Add train departure")
     void addTrainDepartureWithValidInputs() {
-      assertTrue(tdr.checkIfdepartureIdExists(1));
+      assertTrue(tdr.checkIfDepartureIdExists(1));
      // assertEquals(4, tdr.allTrainDepartures.size());
     }
 
@@ -71,7 +69,7 @@ class TrainDepartureRegisterTest {
     @DisplayName("Test the removal of train departures")
     void removeTrainDepartureBeforeTime() {
       tdr.removeTrainDepartureBeforeTime(LocalTime.of(11, 0));
-      assertFalse(tdr.checkIfdepartureIdExists(1));
+      assertFalse(tdr.checkIfDepartureIdExists(1));
     }
 
     /** Testing the error handling of the method that removes train departures. */
@@ -87,8 +85,8 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Check if train departure exists in the register")
     void checkIfExists() {
-      assertTrue(tdr.checkIfdepartureIdExists(1));
-      assertFalse(tdr.checkIfdepartureIdExists(9));
+      assertTrue(tdr.checkIfDepartureIdExists(1));
+      assertFalse(tdr.checkIfDepartureIdExists(9));
     }
 
     /**
@@ -98,7 +96,7 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Error handling of checkIfExists")
     void checkIfExistsErrorHandling() {
-      assertThrows(IllegalArgumentException.class, () -> tdr.checkIfdepartureIdExists(-1));
+      assertThrows(IllegalArgumentException.class, () -> tdr.checkIfDepartureIdExists(-1));
     }
   }
 
@@ -114,7 +112,7 @@ class TrainDepartureRegisterTest {
     @DisplayName("Get train departure based on train ID")
     void getTrainDepartureBasedOndepartureId() {
       assertEquals(
-          trainDepartureNumber1.toString(), tdr.getTrainDepartureBasedOndepartureId(1));
+          trainDepartureNumber1.toString(), tdr.getTrainDepartureBasedOnDepartureId(1));
     }
 
     /**
@@ -124,7 +122,7 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Error handling of getTrainDepartureBasedOndepartureId")
     void getTrainDepartureBasedOndepartureIdErrorHandling() {
-      assertThrows(IllegalArgumentException.class, () -> tdr.getTrainDepartureBasedOndepartureId(-1));
+      assertThrows(IllegalArgumentException.class, () -> tdr.getTrainDepartureBasedOnDepartureId(-1));
     }
 
     /** Testing the filtering of the train departures based on the destination. */

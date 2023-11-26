@@ -1,51 +1,53 @@
 package edu.ntnu.stud.models;
 
 import edu.ntnu.stud.utils.ParameterValidation;
-
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 
 /**
  * Represents a train departure.
  *
- * <p>This class provides a model for storing information about train departures. It includes
- * attributes such as departure time, train line, departure ID, destination, delay and track.
+ * <p>Includes attributes such as departure time, train line, departure ID, destination, delay and
+ * track.
  *
- * <p>All attributes are immutable except for delay, delayed Time and track.
+ * <p>All attributes are immutable except for delay and track. Class includes accessor methods for
+ * all attributes except for Train Line and mutator methods for the mutable attributes. The train
+ * line attribute is never called on independently apart from the toString method which is why there
+ * is no accessor method for it.
  *
- * <p><strong>Note:</strong>This class does not perform input validation.
+ * <p>Input validation is performed on all parameters of the constructor before initialising the
+ * attributes.
+ *
+ * <p><Strong>Goal: </Strong>Act as a model for storing information about train departures.
+ *
+ * @version 1.0
+ * @author 10083
+ * @since 0.1
  */
 public class TrainDeparture {
-  private final LocalTime departureTime;
-
-  private final String departureTimeFormatted;
-
-  private final String trainLine;
-
-  private final int departureId;
-
-  private final String destination;
-
-  private int delay;
-
-  private LocalTime delayedTime;
-
-  private int track;
-
   private static final DateTimeFormatter DELAY_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-
   private static final DateTimeFormatter DEPARTURE_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+  private final int departureId;
+  private final LocalTime departureTime;
+  private final String departureTimeFormatted;
+  private final String destination;
+  private final String trainLine;
+  private LocalTime delayedTime;
+  private int delay;
+  private int track;
 
   /**
    * Constructs a new train departure with the specified details.
    *
    * @param departureTime local time value representing the time it leaves the station
-   * @param trainLine The name of the train line
-   * @param departureId The unique identifier for the train
-   * @param destination Place the train will arrive at
-   * @param delay Amount of time the train is delayed
-   * @param track The track the train is on
+   * @param trainLine string representing the train line
+   * @param departureId int representing the unique identifier for the train
+   * @param destination string representing the destination for the train
+   * @param delay int representing the delay in minutes
+   * @param track int representing the track number
+   * @throws NullPointerException if the departure time is null
+   * @throws IllegalArgumentException if the Train line or destination is blank and if the departure
+   *     ID or delay is negative, or if the track number is not between 1 and 15
    */
   public TrainDeparture(
       LocalTime departureTime,
@@ -54,17 +56,13 @@ public class TrainDeparture {
       String destination,
       int delay,
       int track)
-      throws IllegalArgumentException, NullPointerException {
-    if (departureTime == null) {
-      throw new NullPointerException(
-          "The departure time cannot be null. Please enter a value for departure time");
-    }
+      throws NullPointerException, IllegalArgumentException {
+    ParameterValidation.validateTime(departureTime);
     ParameterValidation.notBlankValidation(
-        trainLine, "No Train line has been detected. Please enter a value for train line");
+        trainLine, "No Train line has been detected. Please enter the train line");
     ParameterValidation.notBlankValidation(
         destination, "No destination has been detected. Please enter the destination");
-    ParameterValidation.positiveIntegerValidation(
-        departureId, "The departure ID cannot be negative");
+    ParameterValidation.validateId(departureId);
     this.departureTime = departureTime;
     this.departureTimeFormatted = this.departureTime.format(DEPARTURE_FORMATTER);
     this.trainLine = trainLine;
@@ -74,7 +72,13 @@ public class TrainDeparture {
     setTrack(track);
   }
 
-  // Copy constructor params TrainDeparture
+  /**
+   * Constructs a new train departure with the specified details.
+   *
+   * <p><Strong>Role: </Strong> Used to create a deep copy of the train departure
+   *
+   * @param trainDeparture the object of the class to be copied
+   */
   public TrainDeparture(TrainDeparture trainDeparture) {
     this.departureTime = trainDeparture.departureTime;
     this.departureTimeFormatted = trainDeparture.departureTimeFormatted;
@@ -87,56 +91,11 @@ public class TrainDeparture {
   }
 
   /**
-   * Retrieves the departure time for the train.
-   *
-   * @return The departure time
-   */
-  public LocalTime getDepartureTime() {
-    return departureTime;
-  }
-
-  /**
-   * Retrieves the departure time formatted as a string.
-   *
-   * @return The departure time formatted as a string
-   */
-  public String getDepartureTimeFormatted() {
-    return departureTimeFormatted;
-  }
-
-  /**
-   * Retrieves the name of the train line.
-   *
-   * @return The name of the train line
-   */
-  public String getTrainLine() {
-    return trainLine;
-  }
-
-  /**
-   * Retrieves the unique identifier for the train.
-   *
-   * @return The unique identifier for the train
-   */
-  public int getDepartureId() {
-    return departureId;
-  }
-
-  /**
-   * Retrieves the destination for the train.
-   *
-   * @return The destination for the train
-   */
-  public String getDestination() {
-    return destination;
-  }
-
-  /**
    * Retrieves the delay for the train.
    *
    * @return The delay for the train
    */
-  public int getDelay() {
+  private int getDelay() {
     return delay;
   }
 
@@ -159,6 +118,42 @@ public class TrainDeparture {
   }
 
   /**
+   * Retrieves the unique identifier for the train.
+   *
+   * @return The unique identifier for the train
+   */
+  public int getDepartureId() {
+    return departureId;
+  }
+
+  /**
+   * Retrieves the departure time for the train.
+   *
+   * @return The departure time
+   */
+  public LocalTime getDepartureTime() {
+    return departureTime;
+  }
+
+  /**
+   * Retrieves the departure time formatted as a string.
+   *
+   * @return The departure time formatted as a string
+   */
+  public String getDepartureTimeFormatted() {
+    return departureTimeFormatted;
+  }
+
+  /**
+   * Retrieves the destination for the train.
+   *
+   * @return The destination for the train
+   */
+  public String getDestination() {
+    return destination;
+  }
+
+  /**
    * Retrieves the track number for the train.
    *
    * @return The track number for the train
@@ -168,15 +163,24 @@ public class TrainDeparture {
   }
 
   /**
+   * Retrieves the train line for the train.
+   *
+   * @return The track number for the train
+   */
+  private String getTrainLine() {
+    return trainLine;
+  }
+
+  /**
    * Assigns a delay in minutes to the train departure.
    *
-   * @param newDelay the delay in minutes
+   * @param delay the delay in minutes
    * @throws IllegalArgumentException if the delay is negative
    */
-  public void setDelayAndDelayTime(int newDelay) {
-    ParameterValidation.positiveIntegerValidation(newDelay, "The delay cannot be negative");
-    this.delay = newDelay;
-    this.delayedTime = departureTime.plusMinutes(delay);
+  public void setDelayAndDelayTime(int delay) {
+    ParameterValidation.validateDelay(delay);
+    this.delay = delay;
+    this.delayedTime = departureTime.plusMinutes(this.delay);
   }
 
   /**
@@ -186,9 +190,7 @@ public class TrainDeparture {
    * @throws IllegalArgumentException if the track number is not between 1 and 15
    */
   public void setTrack(int track) {
-    ParameterValidation.validateTrack(
-        track,
-        "There are 15 tracks at the station. Please enter a value for track between 1 and 15");
+    ParameterValidation.validateTrack(track);
     this.track = track;
   }
 
@@ -200,14 +202,15 @@ public class TrainDeparture {
   @Override
   public String toString() {
     String formattedDestination =
-        Character.toUpperCase(destination.charAt(0)) + destination.substring(1).toLowerCase();
+        Character.toUpperCase(getDestination().charAt(0))
+            + getDestination().substring(1).toLowerCase();
     return String.format(
         "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5s |",
-        departureTimeFormatted,
-        trainLine,
-        departureId,
+        getDepartureTimeFormatted(),
+        getTrainLine(),
+        getDepartureId(),
         formattedDestination,
-        (delay > 0) ? delayedTime : " ",
-        (track == -1) ? " " : track);
+        (getDelay() > 0) ? getDelayedTimeFormatted() : " ",
+        (getTrack() == -1) ? " " : getTrack());
   }
 }
