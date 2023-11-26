@@ -2,54 +2,72 @@ package edu.ntnu.stud.models;
 
 import edu.ntnu.stud.utils.ParameterValidation;
 
-import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * This file contains the class which handles the register of the train departures - aka the list
- * that contains all the train departures. There are two main get methods that filter the list based
- * on the Train id and the Destination. There are also two set methods that set the delay and track
- * number of the train departure. Apart from these setters and getters, there are methods to perform
- * other tasks such as the toString to print out the whole table and the addTrainDeparture method to
- * add a new train departure to the list.
+ * Represents the train departure register containing the instances of the train departures. The
+ * instances are stored in an ArrayList.
+ *
+ * <p><Strong>Goal: </Strong>Act as a model for a train departure register.
+ *
+ * @author 10083
+ * @version 1.0
+ * @since 0.2
  */
 public class TrainDepartureRegister {
   private final ArrayList<TrainDeparture> allTrainDepartures = new ArrayList<>();
 
-  // constructor to initialize the train departure register
+  /** Constructs an object of the class TrainDepartureRegister. */
   public TrainDepartureRegister() {}
 
   /**
-   * The method adds the train departure to the register.
+   * Adds a departure to the register after parameter validation is performed on the arguments.
    *
-   * @param trainDeparture the train departure instance to be added to the register
+   * @param departureTime local time value representing the time it leaves the station
+   * @param trainLine string representing the train line
+   * @param departureId int representing the unique identifier for the train
+   * @param destination string representing the destination for the train
+   * @param delay int representing the delay in minutes
+   * @param track int representing the track number
+   * @throws NullPointerException if the departure time is null
+   * @throws IllegalArgumentException
+   *     <ol>
+   *       <li>if the Train line or destination is blank
+   *       <li>if the departure ID or delay is negative
+   *       <li>if the track number is not between 1 and 15
+   *     </ol>
    */
-  public void addTrainDeparture(TrainDeparture trainDeparture) {
-    allTrainDepartures.add(trainDeparture);
-  }
+  public void addTrainDeparture(
+      LocalTime departureTime,
+      String trainLine,
+      int departureId,
+      String destination,
+      int delay,
+      int track)
+      throws NullPointerException, IllegalArgumentException {
+    ParameterValidation.validateTime(departureTime);
+    ParameterValidation.notBlankValidation(
+        trainLine, "No Train line has been detected. Please enter the train line");
+    ParameterValidation.notBlankValidation(
+        destination, "No destination has been detected. Please enter the destination");
+    ParameterValidation.validateId(departureId);
+    ParameterValidation.validateDelay(delay);
+    ParameterValidation.validateTrack(track);
 
-  /**
-   * The method returns the train departures in the register as a string.
-   *
-   * @return the train departures in the register as a string
-   */
-  @Override
-  public String toString() {
-    ArrayList<TrainDeparture> sortedRegister = sortTheTrainDepartureRegister();
-    return sortedRegister.stream().map(TrainDeparture::toString).collect(Collectors.joining("\n"));
+    allTrainDepartures.add(
+        new TrainDeparture(departureTime, trainLine, departureId, destination, delay, track));
   }
 
   /**
    * Sort the train departures based on the departure time.
    *
-   * @return the sorted train departures
+   * @return the sorted list of train departures
    */
   public ArrayList<TrainDeparture> sortTheTrainDepartureRegister() {
-    ArrayList<TrainDeparture> unsortedListOfTrainDepartures = new ArrayList<>(allTrainDepartures);
+    ArrayList<TrainDeparture> unsortedListOfTrainDepartures = deepCopyOfDepartures();
     unsortedListOfTrainDepartures.sort(Comparator.comparing(TrainDeparture::getDepartureTime));
     return unsortedListOfTrainDepartures;
   }
@@ -60,12 +78,8 @@ public class TrainDepartureRegister {
    *
    * @param theTime the time to check if the train departure is before
    */
-  public void removeTrainDepartureBeforeTime(LocalTime theTime)
-      throws IllegalArgumentException, NullPointerException, DateTimeException {
-    Objects.requireNonNull(theTime, "The time cannot be null");
-    if (theTime.isBefore(LocalTime.of(0, 0)) || theTime.isAfter(LocalTime.of(23, 59))) {
-      throw new DateTimeException("The time must be between 00:00 and 23:59. Please try again.");
-    }
+  public void removeTrainDepartureBeforeTime(LocalTime theTime) throws NullPointerException {
+    ParameterValidation.validateTime(theTime);
     allTrainDepartures.removeIf(td -> td.getDelayedTime().isBefore(theTime));
   }
 
@@ -75,8 +89,8 @@ public class TrainDepartureRegister {
    * @param departureIdUnique ID of the train departure
    * @return true if the train departure exists in the register, false otherwise
    */
-  public boolean checkIfdepartureIdExists(int departureIdUnique) throws IllegalArgumentException {
-    ParameterValidation.positiveIntegerValidation(departureIdUnique, "The train ID cannot be negative");
+  public boolean checkIfDepartureIdExists(int departureIdUnique) throws IllegalArgumentException {
+    ParameterValidation.validateId(departureIdUnique);
     return allTrainDepartures.stream().anyMatch(td -> td.getDepartureId() == departureIdUnique);
   }
 
@@ -87,7 +101,8 @@ public class TrainDepartureRegister {
    * @return true if there is a train going to the destination, false otherwise
    */
   public boolean checkIfDestinationExists(String destination) throws IllegalArgumentException {
-    ParameterValidation.notBlankValidation(destination, "No destination has been detected. Please try again.");
+    ParameterValidation.notBlankValidation(
+        destination, "No destination has been detected. Please try again.");
     return allTrainDepartures.stream()
         .anyMatch(td -> td.getDestination().equalsIgnoreCase(destination));
   }
@@ -99,50 +114,59 @@ public class TrainDepartureRegister {
    * @param departureId ID of the train being searched for
    * @return the train departure object with the specific train ID as a string
    */
-  public String getTrainDepartureBasedOndepartureId(int departureId)
-      throws IllegalArgumentException {
-    ParameterValidation.positiveIntegerValidation(departureId, "The train ID cannot be negative");
-    return allTrainDepartures.stream()
+  public String returnTrainDepartureBasedOnId(int departureId) throws IllegalArgumentException {
+    ParameterValidation.validateId(departureId);
+    return deepCopyOfDepartures().stream()
         .filter(td -> td.getDepartureId() == departureId)
         .map(TrainDeparture::toString)
         .collect(Collectors.joining("\n"));
   }
 
   /**
-   * Make a copy of the list of train departures and remove all the train departures that are not
-   * going to the destination specified.
+   * Make a deep copy of the objects in the register.
+   *
+   * @return arrayList containing deep copies of the departure instances in the register
+   */
+  private ArrayList<TrainDeparture> deepCopyOfDepartures() {
+    ArrayList<TrainDeparture> copyOfAllDepartures = new ArrayList<>();
+    allTrainDepartures.forEach(
+        trainDeparture -> copyOfAllDepartures.add(new TrainDeparture(trainDeparture)));
+    return copyOfAllDepartures;
+  }
+
+  /**
+   * Store a deep copy of the objects in the register in a new array list and remove all the
+   * departures that are not going to destination specified in the argument.
    *
    * @param destination to identify the train departure that is being searched for
    * @return arrayList of objects with specific destination attribute
    */
-  public ArrayList<TrainDeparture> getDeparturesBasedOnDestination(String destination)
+  public ArrayList<TrainDeparture> returnTrainDeparturesBasedOnDestination(String destination)
       throws IllegalArgumentException, NullPointerException {
     ParameterValidation.notBlankValidation(
         destination, "No destination has been detected. Please enter the destination");
-    ArrayList<TrainDeparture> copyOfAllTrainDepartures =new ArrayList<>();
-    allTrainDepartures.forEach(trainDeparture -> copyOfAllTrainDepartures.add(new TrainDeparture(trainDeparture)));
-    copyOfAllTrainDepartures.removeIf(td -> !td.getDestination().equalsIgnoreCase(destination)); //deep copies for life!
-    return copyOfAllTrainDepartures;
+    ArrayList<TrainDeparture> copyOfDepartures = deepCopyOfDepartures();
+    copyOfDepartures.removeIf(td -> !td.getDestination().equalsIgnoreCase(destination));
+    return copyOfDepartures;
   }
 
   /** Returns a list of destinations to help during filtering. */
-  public String getDestinations() {
-    return allTrainDepartures.stream()
+  public String returnAllDestinationsInRegister() {
+    return deepCopyOfDepartures().stream()
         .map(TrainDeparture::getDestination)
         .distinct()
         .collect(Collectors.joining(" | "));
   }
 
-  // set-methods:
   /**
    * The method sets the delay for a train departure based on the train ID.
    *
    * @param departureId unique identifier of the train departure
    * @param delay the delay in minutes
    */
-  public void setDelay(int departureId, int delay) {
-    ParameterValidation.positiveIntegerValidation(departureId, "The train ID cannot be negative");
-    ParameterValidation.positiveIntegerValidation(delay, "The delay cannot be negative");
+  public void assignDelay(int departureId, int delay) {
+    ParameterValidation.validateId(departureId);
+    ParameterValidation.validateDelay(delay);
     allTrainDepartures.stream()
         .filter(traDep -> traDep.getDepartureId() == departureId)
         .forEach(traDep -> traDep.setDelayAndDelayTime(delay));
@@ -154,12 +178,22 @@ public class TrainDepartureRegister {
    * @param departureId unique identifier of the train departure
    * @param trackNum the track number
    */
-  public void setTrack(int departureId, int trackNum) throws IllegalArgumentException {
-    ParameterValidation.positiveIntegerValidation(departureId, "The train ID cannot be negative");
-    ParameterValidation.validateTrack(trackNum,
-            "There are 15 tracks at the station. Please enter a value for track between 1 and 15");
+  public void assignTrack(int departureId, int trackNum) throws IllegalArgumentException {
+    ParameterValidation.validateId(departureId);
+    ParameterValidation.validateTrack(trackNum);
     allTrainDepartures.stream()
         .filter(traDep -> traDep.getDepartureId() == departureId)
         .forEach(traDep -> traDep.setTrack(trackNum));
+  }
+
+  /**
+   * The method returns the train departures in the register as a string.
+   *
+   * @return the train departures in the register as a string
+   */
+  @Override
+  public String toString() {
+    ArrayList<TrainDeparture> sortedRegister = sortTheTrainDepartureRegister();
+    return sortedRegister.stream().map(TrainDeparture::toString).collect(Collectors.joining("\n"));
   }
 }
