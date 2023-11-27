@@ -3,6 +3,9 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
 
+### .class files ###
+*.class
+
 ### IntelliJ IDEA ###
 .idea/
 *.iws
