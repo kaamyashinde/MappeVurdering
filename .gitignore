@@ -6,6 +6,9 @@ target/
 ### .class files ###
 *.class
 
+### testing random pieces of code ###
+src/test/java/edu/ntnu/stud/TesingRandomPiecesOfCode.java
+
 ### IntelliJ IDEA ###
 .idea/
 *.iws
