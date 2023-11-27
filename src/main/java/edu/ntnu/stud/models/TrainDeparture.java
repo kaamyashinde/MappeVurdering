@@ -3,6 +3,7 @@ package edu.ntnu.stud.models;
 import edu.ntnu.stud.utils.ParameterValidation;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /**
  * Represents a train departure.
@@ -11,16 +12,14 @@ import java.time.format.DateTimeFormatter;
  * track.
  *
  * <p>All attributes are immutable except for delay and track. Class includes accessor methods for
- * all attributes except for Train Line and mutator methods for the mutable attributes. The train
- * line attribute is never called on independently apart from the toString method which is why there
- * is no accessor method for it.
+ * all attributes and mutator methods for the mutable attributes.
  *
  * <p>Input validation is performed on all parameters of the constructor before initialising the
  * attributes.
  *
  * <p><Strong>Goal: </Strong>Act as a model for storing information about train departures.
  *
- * @version 1.0
+ * @version 1.2
  * @author 10083
  * @since 0.1
  */
@@ -46,8 +45,12 @@ public class TrainDeparture {
    * @param delay int representing the delay in minutes
    * @param track int representing the track number
    * @throws NullPointerException if the departure time is null
-   * @throws IllegalArgumentException if the Train line or destination is blank and if the departure
-   *     ID or delay is negative, or if the track number is not between 1 and 15
+   * @throws IllegalArgumentException has three different conditions:
+   *     <ol>
+   *       <li>if the Train line or destination is blank
+   *       <li>if the departure ID or delay is negative
+   *       <li>if the track number is not between 1 and 15
+   *     </ol>
    */
   public TrainDeparture(
       LocalTime departureTime,
@@ -97,6 +100,15 @@ public class TrainDeparture {
    */
   private int getDelay() {
     return delay;
+  }
+
+  /**
+   * Retrieves the train line for the train.
+   *
+   * @return The track number for the train
+   */
+  public String getTrainLine() {
+    return trainLine;
   }
 
   /**
@@ -163,15 +175,6 @@ public class TrainDeparture {
   }
 
   /**
-   * Retrieves the train line for the train.
-   *
-   * @return The track number for the train
-   */
-  private String getTrainLine() {
-    return trainLine;
-  }
-
-  /**
    * Assigns a delay in minutes to the train departure.
    *
    * @param delay the delay in minutes
@@ -212,5 +215,19 @@ public class TrainDeparture {
         formattedDestination,
         (getDelay() > 0) ? getDelayedTimeFormatted() : " ",
         (getTrack() == -1) ? " " : getTrack());
+  }
+
+  /**
+   * Compares the specified object with this train departure for equality.
+   *
+   * @param o the object to be compared for equality with this train departure
+   * @return true if the specified object is equal to this train departure, false otherwise
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    TrainDeparture that = (TrainDeparture) o;
+    return track == that.track && Objects.equals(delayedTime, that.delayedTime);
   }
 }
