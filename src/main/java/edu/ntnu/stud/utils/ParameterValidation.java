@@ -2,6 +2,11 @@ package edu.ntnu.stud.utils;
 
 import java.time.LocalTime;
 
+/**
+ * @author 10083
+ * @version 0.4
+ * @since 0.4
+ */
 public class ParameterValidation {
 
     public static void validateDelay(int number){

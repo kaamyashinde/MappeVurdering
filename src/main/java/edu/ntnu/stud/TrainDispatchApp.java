@@ -2,7 +2,15 @@ package edu.ntnu.stud;
 
 import edu.ntnu.stud.userinterface.UserInterface;
 
-/** This is the main class for the train dispatch application. */
+/**
+ * Wrapper-class for the static main-method to run the application.
+ *
+ * <p><Strong>Goal: </Strong> Launch the user interface via the the main method.
+ *
+ * @author 10083
+ * @version 1.2
+ * @since 0.3
+ */
 public class TrainDispatchApp {
 
   /**
@@ -10,8 +18,6 @@ public class TrainDispatchApp {
    * uses it to first initialise the application and then start it.
    */
   public static void main(String[] args) {
-    UserInterface ui = new UserInterface();
-    ui.init();
-    ui.start();
+    UserInterface.launch();
   }
 }
