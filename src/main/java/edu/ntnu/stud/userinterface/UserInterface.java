@@ -55,13 +55,14 @@ public class UserInterface {
   /** Initialises the application by adding train departures to it. */
   public static void init() {
     try {
+      /*
       kristiansand.addTrainDeparture(LocalTime.of(13, 20), "F1", 1, "Oslo", 1, 1);
       kristiansand.addTrainDeparture(LocalTime.of(10, 0), "F2", 2, "Stavanger", 0, 2);
       kristiansand.addTrainDeparture(LocalTime.of(12, 20), "F3", 4, "Bergen", 0, -1);
       kristiansand.addTrainDeparture(LocalTime.of(3, 0), "F4", 5, "Trondheim", 78, 6);
       kristiansand.addTrainDeparture(LocalTime.of(1, 50), "F5", 6, "Oslo", 5, -1);
       kristiansand.addTrainDeparture(LocalTime.of(23, 27), "F3", 7, "Bergen", 9, 4);
-      kristiansand.addTrainDeparture(LocalTime.of(15, 46), "F2", 8, "Trondheim", 2, -1);
+      kristiansand.addTrainDeparture(LocalTime.of(15, 46), "F2", 8, "Trondheim", 2, -1);*/
       kristiansand.addTrainDeparture(LocalTime.of(19, 20), "F2", 9, "Bergen", 0, -1);
     } catch (IllegalArgumentException | NullPointerException | DateTimeException e) {
       System.out.println(
@@ -168,6 +169,11 @@ public class UserInterface {
    */
   private static void departuresOverview() {
     kristiansand.removeTrainDepartureBeforeTime(time);
+
+    if (kristiansand.getTimeTilNextDeparture(time) == -1) {
+      System.out.println("There are no more departures today. \n");
+      return;
+    }
     System.out.println("Here is an overview of all the departures: \n");
     long hours = kristiansand.getTimeTilNextDeparture(time) / 60;
     long minutes = kristiansand.getTimeTilNextDeparture(time) % 60;
@@ -393,8 +399,15 @@ public class UserInterface {
    * </ol>
    */
   private static void findDeparturesByDestination() {
-    System.out.println("The trains today are going to the following destination: ");
-    System.out.println(kristiansand.returnAllDestinationsInRegister() + "\n");
+    String destinations = kristiansand.returnAllDestinationsInRegister();
+    if (destinations.isEmpty()) {
+      System.out.println("There are no departures in the register. \n");
+      return;
+    } else {
+      System.out.println("The trains today are going to the following destination: ");
+      System.out.println(destinations + "\n");
+    }
+
     input.nextLine();
     String destination =
         UserInputValidation.validateStringUserInput(input, "What is the destination?", 1);

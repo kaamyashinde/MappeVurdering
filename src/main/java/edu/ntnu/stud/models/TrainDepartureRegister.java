@@ -87,6 +87,41 @@ public class TrainDepartureRegister {
   }
 
   /**
+   * Finds the total number of departures in the register.
+   *
+   * @return the number of departures in the register
+   */
+  public int getNumberOfTrainDepartures() {
+    return allTrainDepartures.size();
+  }
+
+  /** Calculates the amount of time before the nearest departure leaves the station. */
+  public long getTimeTilNextDeparture(LocalTime time) {
+    ParameterValidation.validateTime(time);
+    ArrayList<TrainDeparture> sortedList = sortTheTrainDepartureRegister();
+    if (allTrainDepartures.isEmpty()) {
+      return -1;
+    }
+    LocalTime timeOfNextDeparture = sortedList.get(0).getDelayedTime();
+
+    Duration timeUntilNextDeparture = Duration.between(time, timeOfNextDeparture);
+    return timeUntilNextDeparture.toMinutes();
+  }
+
+  /** Finds the 50th percentile of the train departures based on the departure time. */
+  public String findInterQuartileRange() {
+    ArrayList<TrainDeparture> sortedRegister = sortTheTrainDepartureRegister();
+    int size = sortedRegister.size();
+    int start = size / 4; // 25th percentile
+    int end = 3 * size / 4; // 75th percentile
+
+    LocalTime theStart = sortedRegister.get(start).getDepartureTime();
+    LocalTime theEnd = sortedRegister.get(end).getDepartureTime();
+
+    return theStart + " - " + theEnd;
+  }
+
+  /**
    * Generates a list of all the destinations that the departures in the register are going to.
    *
    * @return the list of destinations
@@ -182,6 +217,14 @@ public class TrainDepartureRegister {
         .forEach(traDep -> traDep.setTrack(trackNum));
   }
 
+  /** Checks if two departures have the same departure time from the same track. */
+  public void checkIfTwoDeparturesLeaveFromSameTrackAtTheSameTime(TrainDeparture td) {
+    if (allTrainDepartures.contains(td)) {
+      throw new IllegalArgumentException(
+          "There already exists a departure with the same departure time that is leaving the same track. Please try again.");
+    }
+  }
+
   /**
    * Removes the train departure based on its ID
    *
@@ -199,45 +242,8 @@ public class TrainDepartureRegister {
    */
   public void removeTrainDepartureBeforeTime(LocalTime theTime) throws NullPointerException {
     ParameterValidation.validateTime(theTime);
-    allTrainDepartures.removeIf(td -> td.getDelayedTime().isBefore(theTime));
-  }
-
-  /** Finds the 50th percentile of the train departures based on the departure time. */
-  public String findInterQuartileRange() {
-    ArrayList<TrainDeparture> sortedRegister = sortTheTrainDepartureRegister();
-    int size = sortedRegister.size();
-    int start = size / 4; // 25th percentile
-    int end = 3 * size / 4; // 75th percentile
-
-    LocalTime theStart = sortedRegister.get(start).getDepartureTime();
-    LocalTime theEnd = sortedRegister.get(end).getDepartureTime();
-
-    return theStart + " - " + theEnd;
-  }
-
-  /**
-   * Finds the total number of departures in the register.
-   *
-   * @return the number of departures in the register
-   */
-  public int getNumberOfTrainDepartures() {
-    return allTrainDepartures.size();
-  }
-
-  /** Calculates the amount of time before the nearest departure leaves the station. */
-  public long getTimeTilNextDeparture(LocalTime time) {
-    ArrayList<TrainDeparture> sortedList = sortTheTrainDepartureRegister();
-    LocalTime timeOfNextDeparture = sortedList.get(0).getDelayedTime();
-
-    Duration timeUntilNextDeparture = Duration.between(time, timeOfNextDeparture);
-    return timeUntilNextDeparture.toMinutes();
-  }
-
-  /** Checks if two departures have the same departure time from the same track. */
-  public void checkIfTwoDeparturesLeaveFromSameTrackAtTheSameTime(TrainDeparture td) {
-    if (allTrainDepartures.contains(td)) {
-      throw new IllegalArgumentException(
-          "There already exists a departure with the same departure time that is leaving the same track. Please try again.");
+    if (!allTrainDepartures.isEmpty()) {
+      allTrainDepartures.removeIf(td -> td.getDelayedTime().isBefore(theTime));
     }
   }
 

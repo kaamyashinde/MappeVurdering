@@ -132,12 +132,12 @@ public class UserInputValidation {
 
   private static boolean matchStringToRegEx(int caseNum, String userInput) {
     Pattern forTrainLine = Pattern.compile("[A-Z]\\d{2}"); // case num 2
-    Pattern forDestination = Pattern.compile("\\b[A-Z][a-z]*\\b"); // case num 1
+    Pattern forDestination = Pattern.compile("^[A-Z][a-z]*$"); // case num 1
 
     Matcher matcher =
         (caseNum == 1)
             ? forDestination.matcher(
-                Character.toUpperCase(userInput.charAt(0)) + userInput.substring(1).toLowerCase())
+                userInput)
             : forTrainLine.matcher(userInput);
     return matcher.matches();
   }
