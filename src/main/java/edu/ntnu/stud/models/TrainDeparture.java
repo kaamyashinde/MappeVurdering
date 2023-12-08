@@ -225,8 +225,12 @@ public class TrainDeparture {
    */
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     TrainDeparture that = (TrainDeparture) o;
     return track == that.track && Objects.equals(delayedTime, that.delayedTime);
   }

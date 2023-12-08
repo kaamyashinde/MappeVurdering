@@ -55,14 +55,13 @@ public class UserInterface {
   /** Initialises the application by adding train departures to it. */
   public static void init() {
     try {
-      /*
       kristiansand.addTrainDeparture(LocalTime.of(13, 20), "F1", 1, "Oslo", 1, 1);
       kristiansand.addTrainDeparture(LocalTime.of(10, 0), "F2", 2, "Stavanger", 0, 2);
       kristiansand.addTrainDeparture(LocalTime.of(12, 20), "F3", 4, "Bergen", 0, -1);
       kristiansand.addTrainDeparture(LocalTime.of(3, 0), "F4", 5, "Trondheim", 78, 6);
       kristiansand.addTrainDeparture(LocalTime.of(1, 50), "F5", 6, "Oslo", 5, -1);
       kristiansand.addTrainDeparture(LocalTime.of(23, 27), "F3", 7, "Bergen", 9, 4);
-      kristiansand.addTrainDeparture(LocalTime.of(15, 46), "F2", 8, "Trondheim", 2, -1);*/
+      kristiansand.addTrainDeparture(LocalTime.of(15, 46), "F2", 8, "Trondheim", 2, -1);
       kristiansand.addTrainDeparture(LocalTime.of(19, 20), "F2", 9, "Bergen", 0, -1);
     } catch (IllegalArgumentException | NullPointerException | DateTimeException e) {
       System.out.println(
@@ -119,7 +118,7 @@ public class UserInterface {
                 What would u like to do? (Enter a number between 0 and 8).
                 """);
 
-    int choice = UserInputValidation.getIntUserInput(input, 5);
+    int choice = UserInputValidation.validateIntegerUserInput(input, 5);
     if (choice == -6) {
       System.out.println("Failed to update the time. Exiting the system. \n");
       return 0;
@@ -200,7 +199,7 @@ public class UserInterface {
    */
   private static void addDeparture() {
 
-    LocalTime depTime = UserInputValidation.validateTime(input, RETURNING_TO_MENU);
+    LocalTime depTime = UserInputValidation.validateTimeUserInput(input, RETURNING_TO_MENU);
     if (depTime == null) {
       return;
     } else if (depTime.isBefore(time)) {
@@ -279,7 +278,7 @@ public class UserInterface {
         boolean exists;
 
         System.out.println("What is the unique Train id?");
-        int depId = UserInputValidation.getIntUserInput(input, 1);
+        int depId = UserInputValidation.validateIntegerUserInput(input, 1);
         if (depId == -6) {
           System.out.println(RETURNING_TO_MENU);
           return -6;
@@ -296,12 +295,12 @@ public class UserInterface {
       }
       case 2 -> {
         System.out.println("Is the departure assigned a track? (0: yes, 1: no)");
-        int depHasTrack = UserInputValidation.getIntUserInput(input, 4);
+        int depHasTrack = UserInputValidation.validateIntegerUserInput(input, 4);
         int depTrack = -1;
 
         if (depHasTrack == 0) {
           System.out.println("What is the track number?");
-          depTrack = UserInputValidation.getIntUserInput(input, 3);
+          depTrack = UserInputValidation.validateIntegerUserInput(input, 3);
         }
         checkedNum = depTrack;
       }
@@ -328,7 +327,7 @@ public class UserInterface {
    */
   private static void removeTrainDepartureBasedOnId() {
     System.out.println("What is the ID of the train that you want to search for?");
-    int departureId = UserInputValidation.getIntUserInput(input, 1);
+    int departureId = UserInputValidation.validateIntegerUserInput(input, 1);
     if (departureId == -6) {
       System.out.println("Returning back to menu. \n");
       return;
@@ -366,7 +365,7 @@ public class UserInterface {
   private static void getTrainDeparturesByIdMenu() {
 
     System.out.println("What is the ID of the train that you want to search for?");
-    int departureId = UserInputValidation.getIntUserInput(input, 1);
+    int departureId = UserInputValidation.validateIntegerUserInput(input, 1);
     if (departureId == -6) {
       System.out.println("Returning back to menu. \n");
       return;
@@ -439,7 +438,7 @@ public class UserInterface {
    */
   private static void assignTrack() {
     System.out.println("What is the train Id of the train that you want to assign a track to?");
-    int departureId = UserInputValidation.getIntUserInput(input, 1);
+    int departureId = UserInputValidation.validateIntegerUserInput(input, 1);
     if (departureId == -6) {
       System.out.println(RETURNING_TO_MENU);
       return;
@@ -447,7 +446,7 @@ public class UserInterface {
     System.out.println(departureId);
     if (checkIfDepartureIdExists(departureId)) {
       System.out.println("What is the track number?");
-      int track = UserInputValidation.getIntUserInput(input, 3);
+      int track = UserInputValidation.validateIntegerUserInput(input, 3);
       kristiansand.assignTrack(departureId, track);
     } else {
       System.out.println("The train ID does not exist. \n");
@@ -470,14 +469,14 @@ public class UserInterface {
    */
   private static void updateDelay() {
     System.out.println("What is the train Id of the train that you want to update the delay of?");
-    int departureId = UserInputValidation.getIntUserInput(input, 1);
+    int departureId = UserInputValidation.validateIntegerUserInput(input, 1);
     if (departureId == -6) {
       System.out.println("Returning back to the menu \n");
       return;
     }
     if (checkIfDepartureIdExists(departureId)) {
       System.out.println("What is the delay in minutes?");
-      int delay = UserInputValidation.getIntUserInput(input, 2);
+      int delay = UserInputValidation.validateIntegerUserInput(input, 2);
       if (delay == -6) {
         System.out.println("Returning back to the menu \n");
         return;
@@ -500,7 +499,7 @@ public class UserInterface {
    * </ol>
    */
   private static void updateTime(String timeMessage, String errorMessage) {
-    LocalTime temp = UserInputValidation.validateTime(input, errorMessage);
+    LocalTime temp = UserInputValidation.validateTimeUserInput(input, errorMessage);
     assert temp != null;
     if (temp.isBefore(time)) {
       System.out.println(timeMessage);

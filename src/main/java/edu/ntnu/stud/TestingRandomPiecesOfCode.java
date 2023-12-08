@@ -3,8 +3,11 @@ package edu.ntnu.stud;
 import edu.ntnu.stud.models.TrainDeparture;
 import edu.ntnu.stud.models.TrainDepartureRegister;
 
+import java.time.DateTimeException;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class TestingRandomPiecesOfCode {
@@ -93,50 +96,13 @@ public class TestingRandomPiecesOfCode {
   }
 
   public static void main(String[] args) {
-Scanner input = new Scanner(System.in);
-int hour = getIntt(input);
+    /*Duration duration = Duration.between(LocalTime.of(10, 31), LocalTime.of(12, 30));
+    long hour = duration.toHours();
+    long minutes = duration.toMinutes() % 60;
 
+    System.out.println("hour: " + hour + " and minutes: " + minutes);*/
 
-
-
+    LocalTime time1 = LocalTime.of(10, 30);
+    System.out.println(time1);
   }
-
-  public static int getIntt(Scanner input) {
-    int num = 0;
-    for (int i = 3; i > 0; i--) {
-      if (input.hasNextInt()) {
-        num = input.nextInt();
-        break;
-      } else if (i == 1) {
-        System.out.println("too many failed attempts");
-        num = -1;
-      } else {
-        System.out.println("invalid input. attempts remaining: " + (i - 1));
-        input.next(); //consume invalid attempt
-      }
-    }
-    return num;
-  }
-
-  public static int getInt(Scanner input) {
-    int num = 0;
-    int attempts = 3;
-
-    while (attempts > 0) {
-      if (input.hasNextInt()) {
-        num = input.nextInt();
-        break;
-      } else if (attempts == 1) {
-        System.out.println("Too many failed attempts");
-        num = -1;
-        break;
-      } else {
-        System.out.println("Invalid input. Attempts remaining: " + (attempts - 1));
-        input.next(); // Consume the invalid input to avoid an infinite loop
-        attempts--;
-      }
-    }
-    return num;
-  }
-
 }
