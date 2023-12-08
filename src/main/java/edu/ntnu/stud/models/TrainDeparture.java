@@ -2,7 +2,6 @@ package edu.ntnu.stud.models;
 
 import edu.ntnu.stud.utils.ParameterValidation;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -24,11 +23,13 @@ import java.util.Objects;
  * @since 0.1
  */
 public class TrainDeparture {
-  private static final DateTimeFormatter DELAY_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-  private static final DateTimeFormatter DEPARTURE_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+  // private static final DateTimeFormatter DELAY_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+  // private static final DateTimeFormatter DEPARTURE_FORMATTER =
+  // DateTimeFormatter.ofPattern("HH:mm");
+
   private final int departureId;
   private final LocalTime departureTime;
-  private final String departureTimeFormatted;
+  // private final String departureTimeFormatted;
   private final String destination;
   private final String trainLine;
   private LocalTime delayedTime;
@@ -38,7 +39,7 @@ public class TrainDeparture {
   /**
    * Constructs a new train departure with the specified details.
    *
-   * @param departureTime local time value representing the time it leaves the station
+   *
    * @param trainLine string representing the train line
    * @param departureId int representing the unique identifier for the train
    * @param destination string representing the destination for the train
@@ -53,21 +54,22 @@ public class TrainDeparture {
    *     </ol>
    */
   public TrainDeparture(
-      LocalTime departureTime,
+      int departureTimeInHours,
+      int departureTimeInMinutes,
       String trainLine,
       int departureId,
       String destination,
       int delay,
       int track)
       throws NullPointerException, IllegalArgumentException {
-    ParameterValidation.validateTime(departureTime);
+    ParameterValidation.validateTime(LocalTime.of(departureTimeInHours, departureTimeInMinutes));
     ParameterValidation.notBlankValidation(
         trainLine, "No Train line has been detected. Please enter the train line");
     ParameterValidation.notBlankValidation(
         destination, "No destination has been detected. Please enter the destination");
     ParameterValidation.validateId(departureId);
-    this.departureTime = departureTime;
-    this.departureTimeFormatted = this.departureTime.format(DEPARTURE_FORMATTER);
+    this.departureTime = LocalTime.of(departureTimeInHours, departureTimeInMinutes);
+    // this.departureTimeFormatted = this.departureTime.format(DEPARTURE_FORMATTER);
     this.trainLine = trainLine;
     this.departureId = departureId;
     this.destination = destination;
@@ -84,7 +86,6 @@ public class TrainDeparture {
    */
   public TrainDeparture(TrainDeparture trainDeparture) {
     this.departureTime = trainDeparture.departureTime;
-    this.departureTimeFormatted = trainDeparture.departureTimeFormatted;
     this.trainLine = trainDeparture.trainLine;
     this.departureId = trainDeparture.departureId;
     this.destination = trainDeparture.destination;
@@ -121,15 +122,6 @@ public class TrainDeparture {
   }
 
   /**
-   * Retrieves the delayed time formatted as a string.
-   *
-   * @return The delayed time formatted as a string
-   */
-  public String getDelayedTimeFormatted() {
-    return delayedTime.format(DELAY_FORMATTER);
-  }
-
-  /**
    * Retrieves the unique identifier for the train.
    *
    * @return The unique identifier for the train
@@ -145,15 +137,6 @@ public class TrainDeparture {
    */
   public LocalTime getDepartureTime() {
     return departureTime;
-  }
-
-  /**
-   * Retrieves the departure time formatted as a string.
-   *
-   * @return The departure time formatted as a string
-   */
-  public String getDepartureTimeFormatted() {
-    return departureTimeFormatted;
   }
 
   /**
@@ -209,11 +192,11 @@ public class TrainDeparture {
             + getDestination().substring(1).toLowerCase();
     return String.format(
         "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5s |",
-        getDepartureTimeFormatted(),
+        getDepartureId(),
         getTrainLine(),
         getDepartureId(),
         formattedDestination,
-        (getDelay() > 0) ? getDelayedTimeFormatted() : " ",
+        (getDelay() > 0) ? getDelayedTime() : " ",
         (getTrack() == -1) ? " " : getTrack());
   }
 

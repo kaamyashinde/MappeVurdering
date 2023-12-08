@@ -23,19 +23,19 @@ class TrainDepartureRegisterTest {
   @BeforeEach
   @DisplayName("Before each: Add train departures to the register")
   public void setUp() {
-    tdr.addTrainDeparture(LocalTime.of(10, 30), "test", 1, "Bergen", 1, 3);
-    tdr.addTrainDeparture(LocalTime.of(12, 30), "test", 2, "Oslo", 0, 2);
-    tdr.addTrainDeparture(LocalTime.of(15, 30), "test", 3, "Bergen", 0, -1);
-    tdr.addTrainDeparture(LocalTime.of(11, 30), "test", 4, "Oslo", 1, 3);
+    tdr.addTrainDeparture(10, 30, "test", 1, "Bergen", 1, 3);
+    tdr.addTrainDeparture(12, 30, "test", 2, "Oslo", 0, 2);
+    tdr.addTrainDeparture(15, 30, "test", 3, "Bergen", 0, -1);
+    tdr.addTrainDeparture(11, 30, "test", 4, "Oslo", 1, 3);
   }
 
   @BeforeEach
   @DisplayName("Before each: Initialise train departure instances for testing ")
   public void initialiseDepartures() {
-    trainDepartureNumber1 = new TrainDeparture(LocalTime.of(10, 30), "test", 1, "Bergen", 1, 3);
-    trainDepartureNumber2 = new TrainDeparture(LocalTime.of(12, 30), "test", 2, "Oslo", 0, 2);
-    trainDepartureNumber3 = new TrainDeparture(LocalTime.of(15, 30), "test", 3, "Bergen", 0, -1);
-    trainDepartureNumber4 = new TrainDeparture(LocalTime.of(11, 30), "test", 4, "Oslo", 1, 3);
+    trainDepartureNumber1 = new TrainDeparture(10, 30, "test", 1, "Bergen", 1, 3);
+    trainDepartureNumber2 = new TrainDeparture(12, 30, "test", 2, "Oslo", 0, 2);
+    trainDepartureNumber3 = new TrainDeparture(15, 30, "test", 3, "Bergen", 0, -1);
+    trainDepartureNumber4 = new TrainDeparture(11, 30, "test", 4, "Oslo", 1, 3);
   }
 
   /** Collection of tests for the utilities */
@@ -128,8 +128,8 @@ class TrainDepartureRegisterTest {
     @DisplayName("Same track and time exception")
     void sameTrackAndTimeException() {
       TrainDepartureRegister newRegister = new TrainDepartureRegister();
-      newRegister.addTrainDeparture(LocalTime.of(10, 3), "test", 1, "bergen", 1, 2);
-      TrainDeparture td = new TrainDeparture(LocalTime.of(10, 3), "test", 2, "OSLO", 1, 2);
+      newRegister.addTrainDeparture(10, 3, "test", 1, "bergen", 1, 2);
+      TrainDeparture td = new TrainDeparture(10, 3, "test", 2, "OSLO", 1, 2);
       assertThrows(
           IllegalArgumentException.class,
           () -> newRegister.checkIfTwoDeparturesLeaveFromSameTrackAtTheSameTime(td));
@@ -231,11 +231,11 @@ class TrainDepartureRegisterTest {
     @DisplayName("IQR of the register")
     void getInterQuartileRange() {
       TrainDepartureRegister newRegister = new TrainDepartureRegister();
-      newRegister.addTrainDeparture(LocalTime.of(10, 3), "test", 1, "bergen", 1, 3);
-      newRegister.addTrainDeparture(LocalTime.of(12, 57), "test", 2, "OSLO", 0, 2);
-      newRegister.addTrainDeparture(LocalTime.of(15, 20), "test", 3, "BergeN", 0, -1);
-      newRegister.addTrainDeparture(LocalTime.of(11, 7), "test", 4, "OsLo", 1, 3);
-      newRegister.addTrainDeparture(LocalTime.of(11, 30), "test", 5, "OsLo", 1, 3);
+      newRegister.addTrainDeparture(10, 3, "test", 1, "bergen", 1, 3);
+      newRegister.addTrainDeparture(12, 57, "test", 2, "OSLO", 0, 2);
+      newRegister.addTrainDeparture(15, 20, "test", 3, "BergeN", 0, -1);
+      newRegister.addTrainDeparture(11, 7, "test", 4, "OsLo", 1, 3);
+      newRegister.addTrainDeparture(11, 30, "test", 5, "OsLo", 1, 3);
 
       String timeSpanBetween2ndAnd3rdDeparture = "11:07 - 12:57";
 
@@ -263,7 +263,7 @@ class TrainDepartureRegisterTest {
     void setDelayThroughRegister() {
       tdr.assignDelay(2, 2);
       TrainDeparture trainDepartureNumber2WithDelay =
-          new TrainDeparture(LocalTime.of(12, 30), "test", 2, "OSLO", 2, 2);
+          new TrainDeparture(12, 30, "test", 2, "OSLO", 2, 2);
 
       assertEquals(trainDepartureNumber2WithDelay.toString(), tdr.returnTrainDepartureBasedOnId(2));
     }

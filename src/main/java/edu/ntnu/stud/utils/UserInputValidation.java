@@ -30,6 +30,8 @@ public class UserInputValidation {
    *   <li>Track
    *   <li>Track Assigned
    *   <li>Menu input
+   *   <li>Hour
+   *   <li>Minute
    * </ol>
    *
    * @param num to be validated
@@ -37,13 +39,17 @@ public class UserInputValidation {
    * @return whether the number fulfills the condition depending on its case number
    */
   private static boolean conditionToValidateAgainstDependingOnIntUserInput(int num, int caseNum) {
-    return (caseNum == 1)
-        ? num > 0
-        : (caseNum == 2)
-            ? num > -1
-            : (caseNum == 3)
-                ? (num == -1 || num > 0)
-                : (caseNum == 4) ? (num == 1 || num == 0) : (num > -1 && num < 9);
+    boolean isValid = false;
+    switch (caseNum) {
+      case 1 -> isValid = num > 0;
+      case 2 -> isValid = num > -1;
+      case 3 -> isValid = num == -1 || num > 0;
+      case 4 -> isValid = num == 1 || num == 0;
+      case 5 -> isValid = num > -1 && num < 9;
+      case 6 -> isValid = num > -1 && num < 24;
+      case 7 -> isValid = num > -1 && num < 60;
+    }
+    return isValid;
   }
 
   /**
@@ -95,7 +101,16 @@ public class UserInputValidation {
           throw new IllegalArgumentException("The menu option must be between 0 and 8.");
         }
       }
-      default -> throw new IllegalArgumentException("Invalid input.");
+      case 6 -> {
+        if (num < 0 || num > 23) {
+          throw new IllegalArgumentException("The hour must be between 0 and 23.");
+        }
+      }
+      default -> {
+        if (num < 0 || num > 59) {
+          throw new IllegalArgumentException("The minute must be between 0 and 59.");
+        }
+      }
     }
   }
 
@@ -128,7 +143,7 @@ public class UserInputValidation {
         input.nextLine();
       }
       if (start == 3) {
-        return -6;
+        throw new IllegalArgumentException("Amount of failed attempts exceeded.");
       }
     }
   }
@@ -192,8 +207,7 @@ public class UserInputValidation {
       if (!text.isBlank() && conditionToValidateAgainstDependingOnStringUserInput(caseNum, text)) {
         return text;
       } else if (i == 1) {
-        System.out.println("Too many failed attempts. The departure won't be added.");
-        text = "";
+       throw new IllegalArgumentException("Too many failed attempts. The departure won't be added.");
       } else {
         System.out.println("Invalid input. Please try again. Attempts remaining: " + (i - 1));
       }

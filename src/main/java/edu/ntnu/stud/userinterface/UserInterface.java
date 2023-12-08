@@ -55,14 +55,14 @@ public class UserInterface {
   /** Initialises the application by adding train departures to it. */
   public static void init() {
     try {
-      kristiansand.addTrainDeparture(LocalTime.of(13, 20), "F1", 1, "Oslo", 1, 1);
-      kristiansand.addTrainDeparture(LocalTime.of(10, 0), "F2", 2, "Stavanger", 0, 2);
-      kristiansand.addTrainDeparture(LocalTime.of(12, 20), "F3", 4, "Bergen", 0, -1);
-      kristiansand.addTrainDeparture(LocalTime.of(3, 0), "F4", 5, "Trondheim", 78, 6);
-      kristiansand.addTrainDeparture(LocalTime.of(1, 50), "F5", 6, "Oslo", 5, -1);
-      kristiansand.addTrainDeparture(LocalTime.of(23, 27), "F3", 7, "Bergen", 9, 4);
-      kristiansand.addTrainDeparture(LocalTime.of(15, 46), "F2", 8, "Trondheim", 2, -1);
-      kristiansand.addTrainDeparture(LocalTime.of(19, 20), "F2", 9, "Bergen", 0, -1);
+      kristiansand.addTrainDeparture(13, 20, "F1", 1, "Oslo", 1, 1);
+      kristiansand.addTrainDeparture(10, 0, "F2", 2, "Stavanger", 0, 2);
+      kristiansand.addTrainDeparture(12, 20, "F3", 4, "Bergen", 0, -1);
+      kristiansand.addTrainDeparture(3, 0, "F4", 5, "Trondheim", 78, 6);
+      kristiansand.addTrainDeparture(1, 50, "F5", 6, "Oslo", 5, -1);
+      kristiansand.addTrainDeparture(23, 27, "F3", 7, "Bergen", 9, 4);
+      kristiansand.addTrainDeparture(15, 46, "F2", 8, "Trondheim", 2, -1);
+      kristiansand.addTrainDeparture(19, 20, "F2", 9, "Bergen", 0, -1);
     } catch (IllegalArgumentException | NullPointerException | DateTimeException e) {
       System.out.println(
           "One of the items could not be added to the register because of the following reason: "
@@ -84,7 +84,7 @@ public class UserInterface {
            Hello and Welcome to the Kristiansand Train Station!
           """);
 
-    updateTime("The system time cannot be before 00:00", "Exiting the program.");
+    updateTime("The system time cannot be before 00:00", "Exiting the system.");
 
     try {
       while (running) {
@@ -177,15 +177,16 @@ public class UserInterface {
     long hours = kristiansand.getTimeTilNextDeparture(time) / 60;
     long minutes = kristiansand.getTimeTilNextDeparture(time) % 60;
 
-
-    System.out.println("Time: " + time + "  | Next Departure in " + hours + " hours and " + minutes + " minutes.");
+    System.out.println(
+        "Time: " + time + "  | Next Departure in " + hours + " hours and " + minutes + " minutes.");
 
     System.out.println(HEADER + "\n" + kristiansand + "\n" + SEPARATOR);
-    System.out.println("IQR between " + kristiansand.findInterQuartileRange() + " | Total Number of Departures: " + kristiansand.getNumberOfTrainDepartures() + "\n");
-
-
-
-
+    System.out.println(
+        "IQR between "
+            + kristiansand.findInterQuartileRange()
+            + " | Total Number of Departures: "
+            + kristiansand.getNumberOfTrainDepartures()
+            + "\n");
   }
 
   /**
@@ -198,59 +199,61 @@ public class UserInterface {
    * thrown, it is caught and the user is returned to the menu.
    */
   private static void addDeparture() {
-
-    LocalTime depTime = UserInputValidation.validateTimeUserInput(input, RETURNING_TO_MENU);
-    if (depTime == null) {
-      return;
-    } else if (depTime.isBefore(time)) {
-        System.out.println("The time cannot be before the current time. Departure not added. " + RETURNING_TO_MENU);
-        return;
-        } else {
-        System.out.println("-> The departure time is " + depTime + ".");
-    }
-
-    input.nextLine(); // consume the \n from the previous input
-    String depLine =
-        UserInputValidation.validateStringUserInput(
-            input,
-            "Enter the line of the train in the form F12 (a capital letter + two numbers): ",
-            2);
-
-    if (depLine.isEmpty()) {
-      System.out.println(RETURNING_TO_MENU);
-      return;
-    } else {
-      System.out.println("-> The train line is " + depLine + ".");
-    }
-
-    int departureId = getIntToAddDeparture(1);
-    if (departureId == -6) {
-      return;
-    } else {
-      System.out.println("-> The train ID is " + departureId + ".");
-    }
-
-    input.nextLine();
-    String depDestination =
-        UserInputValidation.validateStringUserInput(
-            input, "Enter the destination of the train: ", 1);
-    if (depDestination.isEmpty()) {
-      System.out.println(RETURNING_TO_MENU);
-      return;
-    } else {
-      System.out.println("-> The train is going to " + depDestination + ".");
-    }
-
-    int depTrack = getIntToAddDeparture(2);
-    if (depTrack == -1) {
-      System.out.println("-> Track has not been assigned to the departure yet.");
-    } else {
-      System.out.println("-> The track number is " + depTrack + ".");
-    }
-
     try {
+      int depHour = getDepartureTimeToAddToDeparture(6, "Enter the hour of the departure: ");
+      int depMinute = getDepartureTimeToAddToDeparture(7, "Enter the minute of the departure: ");
+      LocalTime depTime = LocalTime.of(depHour, depMinute);
 
-      kristiansand.addTrainDeparture(depTime, depLine, departureId, depDestination, 0, depTrack);
+      if (depTime.isBefore(time)) {
+        System.out.println(
+            "The time cannot be before the current time. Departure not added. "
+                + RETURNING_TO_MENU);
+        return;
+      } else {
+        System.out.println("-> The departure time is " + depTime + ".");
+      }
+
+      input.nextLine(); // consume the \n from the previous input
+      String depLine =
+          UserInputValidation.validateStringUserInput(
+              input,
+              "Enter the line of the train in the form F12 (a capital letter + two numbers): ",
+              2);
+
+      if (depLine.isEmpty()) {
+        System.out.println(RETURNING_TO_MENU);
+        return;
+      } else {
+        System.out.println("-> The train line is " + depLine + ".");
+      }
+
+      int departureId = getIntToAddDeparture(1);
+      if (departureId == -6) {
+        return;
+      } else {
+        System.out.println("-> The train ID is " + departureId + ".");
+      }
+
+      input.nextLine();
+      String depDestination =
+          UserInputValidation.validateStringUserInput(
+              input, "Enter the destination of the train: ", 1);
+      if (depDestination.isEmpty()) {
+        System.out.println(RETURNING_TO_MENU);
+        return;
+      } else {
+        System.out.println("-> The train is going to " + depDestination + ".");
+      }
+
+      int depTrack = getIntToAddDeparture(2);
+      if (depTrack == -1) {
+        System.out.println("-> Track has not been assigned to the departure yet.");
+      } else {
+        System.out.println("-> The track number is " + depTrack + ".");
+      }
+
+      kristiansand.addTrainDeparture(
+          depHour, depMinute, depLine, departureId, depDestination, 0, depTrack);
 
       System.out.println(
           "The train departure with ID "
@@ -260,10 +263,20 @@ public class UserInterface {
               + (depTrack == -1 ? " " : " from track " + depTrack + " ")
               + "has been successfully added to thh register.");
     } catch (IllegalArgumentException | DateTimeException e) {
-        System.out.println(e.getMessage());
+      System.out.println(e.getMessage());
       System.out.println(RETURNING_TO_MENU);
-
     }
+  }
+
+  /**
+   * <strong>Goal: </strong> Handles the input of the datatype integer from the user that
+   * corresponds the time.
+   */
+  private static int getDepartureTimeToAddToDeparture(int caseNum, String message) {
+
+    System.out.println(message);
+
+    return UserInputValidation.validateIntegerUserInput(input, caseNum);
   }
 
   /**
@@ -272,41 +285,37 @@ public class UserInterface {
    * method where it is being called, which is {@link #addDeparture()}.
    */
   private static int getIntToAddDeparture(int caseNum) {
-    int checkedNum = 0;
-    switch (caseNum) {
-      case 1 -> {
-        boolean exists;
+    int checkedNum;
+    if (caseNum == 1) {
 
-        System.out.println("What is the unique Train id?");
-        int depId = UserInputValidation.validateIntegerUserInput(input, 1);
-        if (depId == -6) {
-          System.out.println(RETURNING_TO_MENU);
+      boolean exists;
+
+      System.out.println("What is the unique Train id?");
+      int depId = UserInputValidation.validateIntegerUserInput(input, 1);
+      if (depId == -6) {
+        System.out.println(RETURNING_TO_MENU);
+        return -6;
+      } else {
+        exists = checkIfDepartureIdExists(depId);
+
+        if (exists) {
+          System.out.println("There is already a train with this id. Returning back to the menu");
           return -6;
-        } else {
-          exists = checkIfDepartureIdExists(depId);
-
-          if (exists) {
-            System.out.println("There is already a train with this id. Returning back to the menu");
-            return -6;
-          }
         }
+      }
 
-        checkedNum = depId;
-      }
-      case 2 -> {
-        System.out.println("Is the departure assigned a track? (0: yes, 1: no)");
-        int depHasTrack = UserInputValidation.validateIntegerUserInput(input, 4);
-        int depTrack = -1;
+      checkedNum = depId;
+    } else {
 
-        if (depHasTrack == 0) {
-          System.out.println("What is the track number?");
-          depTrack = UserInputValidation.validateIntegerUserInput(input, 3);
-        }
-        checkedNum = depTrack;
+      System.out.println("Is the departure assigned a track? (0: yes, 1: no)");
+      int depHasTrack = UserInputValidation.validateIntegerUserInput(input, 4);
+      int depTrack = -1;
+
+      if (depHasTrack == 0) {
+        System.out.println("What is the track number?");
+        depTrack = UserInputValidation.validateIntegerUserInput(input, 3);
       }
-      default -> {
-        System.out.println("This statement should never be reached.");
-      }
+      checkedNum = depTrack;
     }
     return checkedNum;
   }
@@ -499,17 +508,32 @@ public class UserInterface {
    * </ol>
    */
   private static void updateTime(String timeMessage, String errorMessage) {
-    LocalTime temp = UserInputValidation.validateTimeUserInput(input, errorMessage);
-    assert temp != null;
-    if (temp.isBefore(time)) {
-      System.out.println(timeMessage);
-      temp = null;
-    }
-    if (temp == null && !errorMessage.equals(RETURNING_TO_MENU)) {
-      running = false;
-    } else if (temp != null) {
-      time = temp;
-      System.out.println("The time has been registered. It is  " + time + "\n");
+    LocalTime temp;
+    int hour;
+    int min;
+    try {
+      System.out.println("Enter the time in hour: ");
+      hour = UserInputValidation.validateIntegerUserInput(input, 6);
+      System.out.println("Enter the time in minutes: ");
+      min = UserInputValidation.validateIntegerUserInput(input, 7);
+      temp = LocalTime.of(hour, min);
+      if (temp.isBefore(time)) {
+        System.out.println(timeMessage);
+        temp = null;
+      }
+      if (temp == null && !errorMessage.equals(RETURNING_TO_MENU)) {
+        running = false;
+      } else if (temp != null) {
+        time = temp;
+        System.out.println("The time has been registered. It is  " + time + "\n");
+      }
+    } catch (IllegalArgumentException | DateTimeException e) {
+      if (!errorMessage.equals(RETURNING_TO_MENU)) {
+        System.out.println(errorMessage);
+        running = false;
+      } else {
+        System.out.println(errorMessage);
+      }
     }
   }
 

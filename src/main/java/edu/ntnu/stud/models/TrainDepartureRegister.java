@@ -151,7 +151,7 @@ public class TrainDepartureRegister {
   /**
    * Adds a departure to the register after parameter validation is performed on the arguments.
    *
-   * @param departureTime local time value representing the time it leaves the station
+   *
    * @param trainLine string representing the train line
    * @param departureId int representing the unique identifier for the train
    * @param destination string representing the destination for the train
@@ -166,14 +166,15 @@ public class TrainDepartureRegister {
    *     </ol>
    */
   public void addTrainDeparture(
-      LocalTime departureTime,
+      int departureTimeInHours,
+        int departureTimeInMinutes,
       String trainLine,
       int departureId,
       String destination,
       int delay,
       int track)
       throws NullPointerException, IllegalArgumentException {
-    ParameterValidation.validateTime(departureTime);
+    ParameterValidation.validateTime(LocalTime.of(departureTimeInHours, departureTimeInMinutes));
     ParameterValidation.notBlankValidation(
         trainLine, "No Train line has been detected. Please enter the train line");
     ParameterValidation.notBlankValidation(
@@ -183,7 +184,7 @@ public class TrainDepartureRegister {
     ParameterValidation.validateTrack(track);
 
     TrainDeparture td =
-        new TrainDeparture(departureTime, trainLine, departureId, destination, delay, track);
+        new TrainDeparture(departureTimeInHours,departureTimeInMinutes, trainLine, departureId, destination, delay, track);
     checkIfTwoDeparturesLeaveFromSameTrackAtTheSameTime(td);
 
     allTrainDepartures.add(td);
