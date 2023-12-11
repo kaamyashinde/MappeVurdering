@@ -1,11 +1,10 @@
 package edu.ntnu.stud.models;
 
 import edu.ntnu.stud.utils.ParameterValidation;
-
 import java.time.Duration;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 /**
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
  * @since 0.2
  */
 public class TrainDepartureRegister {
+  /** ArrayList containing the instances of the train departures. */
   private final ArrayList<TrainDeparture> allTrainDepartures = new ArrayList<>();
 
   /** Constructs an object of the class TrainDepartureRegister. */
@@ -42,11 +42,11 @@ public class TrainDepartureRegister {
    * @param destination to identify the train departure that is being searched for
    * @return arrayList of objects going to the same destination
    */
-  public ArrayList<TrainDeparture> returnTrainDeparturesBasedOnDestination(String destination)
-      throws IllegalArgumentException, NullPointerException {
+  private ArrayList<TrainDeparture> returnListOfTrainDeparturesBasedOnDestination(
+      String destination) throws IllegalArgumentException, NullPointerException {
     ParameterValidation.notBlankValidation(
         destination, "No destination has been detected. Please enter the destination");
-    ArrayList<TrainDeparture> copyOfDepartures = deepCopyOfDepartures();
+    ArrayList<TrainDeparture> copyOfDepartures = sortTheTrainDepartureRegister();
     copyOfDepartures.removeIf(td -> !td.getDestination().equalsIgnoreCase(destination));
     return copyOfDepartures;
   }
@@ -56,7 +56,7 @@ public class TrainDepartureRegister {
    *
    * @return the sorted list of train departures
    */
-  public ArrayList<TrainDeparture> sortTheTrainDepartureRegister() {
+  private ArrayList<TrainDeparture> sortTheTrainDepartureRegister() {
     ArrayList<TrainDeparture> unsortedListOfTrainDepartures = deepCopyOfDepartures();
     unsortedListOfTrainDepartures.sort(Comparator.comparing(TrainDeparture::getDepartureTime));
     return unsortedListOfTrainDepartures;
@@ -68,7 +68,7 @@ public class TrainDepartureRegister {
    * @param departureIdUnique ID of the train departure
    * @return true if the train departure exists in the register, false otherwise
    */
-  public boolean checkIfDepartureIdExists(int departureIdUnique) throws IllegalArgumentException {
+  public boolean doesDepartureIdExist(int departureIdUnique) throws IllegalArgumentException {
     ParameterValidation.validateId(departureIdUnique);
     return allTrainDepartures.stream().anyMatch(td -> td.getDepartureId() == departureIdUnique);
   }
@@ -79,7 +79,7 @@ public class TrainDepartureRegister {
    * @param destination the destination to check if there is a train going to
    * @return true if there is a train going to the destination, false otherwise
    */
-  public boolean checkIfDestinationExists(String destination) throws IllegalArgumentException {
+  public boolean doesDestinationExist(String destination) throws IllegalArgumentException {
     ParameterValidation.notBlankValidation(
         destination, "No destination has been detected. Please try again.");
     return allTrainDepartures.stream()
@@ -112,8 +112,8 @@ public class TrainDepartureRegister {
   public String findInterQuartileRange() {
     ArrayList<TrainDeparture> sortedRegister = sortTheTrainDepartureRegister();
     int size = sortedRegister.size();
-    int start = size / 4; // 25th percentile
-    int end = 3 * size / 4; // 75th percentile
+    int start = size / 4;
+    int end = 3 * size / 4;
 
     LocalTime theStart = sortedRegister.get(start).getDepartureTime();
     LocalTime theEnd = sortedRegister.get(end).getDepartureTime();
@@ -127,10 +127,24 @@ public class TrainDepartureRegister {
    * @return the list of destinations
    */
   public String returnAllDestinationsInRegister() {
-    return deepCopyOfDepartures().stream()
+    return sortTheTrainDepartureRegister().stream()
         .map(TrainDeparture::getDestination)
         .distinct()
         .collect(Collectors.joining(" | "));
+  }
+
+  /**
+   * Retrieves the train departures that are going to destination and maps them to string.
+   *
+   * @param destination to identify the train departure that is being searched for
+   * @return the string containing the train departures
+   */
+  public String returnTrainDeparturesBasedOnDestinationAsString(String destination)
+      throws IllegalArgumentException, NullPointerException {
+    ParameterValidation.notBlankValidation(
+        destination, "No destination has been detected. Please enter the destination");
+    ArrayList<TrainDeparture> temp = returnListOfTrainDeparturesBasedOnDestination(destination);
+    return temp.stream().map(TrainDeparture::toString).collect(Collectors.joining("\n"));
   }
 
   /**
@@ -142,7 +156,7 @@ public class TrainDepartureRegister {
    */
   public String returnTrainDepartureBasedOnId(int departureId) throws IllegalArgumentException {
     ParameterValidation.validateId(departureId);
-    return deepCopyOfDepartures().stream()
+    return sortTheTrainDepartureRegister().stream()
         .filter(td -> td.getDepartureId() == departureId)
         .map(TrainDeparture::toString)
         .collect(Collectors.joining("\n"));
@@ -151,7 +165,8 @@ public class TrainDepartureRegister {
   /**
    * Adds a departure to the register after parameter validation is performed on the arguments.
    *
-   *
+   * @param departureTimeInHours int representing the departure time in hours
+   * @param departureTimeInMinutes int representing the departure time in minutes
    * @param trainLine string representing the train line
    * @param departureId int representing the unique identifier for the train
    * @param destination string representing the destination for the train
@@ -167,14 +182,15 @@ public class TrainDepartureRegister {
    */
   public void addTrainDeparture(
       int departureTimeInHours,
-        int departureTimeInMinutes,
+      int departureTimeInMinutes,
       String trainLine,
       int departureId,
       String destination,
       int delay,
       int track)
       throws NullPointerException, IllegalArgumentException {
-    ParameterValidation.validateTime(LocalTime.of(departureTimeInHours, departureTimeInMinutes));
+    ParameterValidation.validateHour(departureTimeInHours);
+    ParameterValidation.validateMinute(departureTimeInMinutes);
     ParameterValidation.notBlankValidation(
         trainLine, "No Train line has been detected. Please enter the train line");
     ParameterValidation.notBlankValidation(
@@ -184,7 +200,14 @@ public class TrainDepartureRegister {
     ParameterValidation.validateTrack(track);
 
     TrainDeparture td =
-        new TrainDeparture(departureTimeInHours,departureTimeInMinutes, trainLine, departureId, destination, delay, track);
+        new TrainDeparture(
+            departureTimeInHours,
+            departureTimeInMinutes,
+            trainLine,
+            departureId,
+            destination,
+            delay,
+            track);
     checkIfTwoDeparturesLeaveFromSameTrackAtTheSameTime(td);
 
     allTrainDepartures.add(td);
@@ -222,12 +245,14 @@ public class TrainDepartureRegister {
   public void checkIfTwoDeparturesLeaveFromSameTrackAtTheSameTime(TrainDeparture td) {
     if (allTrainDepartures.contains(td)) {
       throw new IllegalArgumentException(
-          "There already exists a departure with the same departure time that is leaving the same track. Please try again.");
+          "There already exists a departure departing from "
+              + td.getTrack()
+              + " at the same time. Please try again.");
     }
   }
 
   /**
-   * Removes the train departure based on its ID
+   * Removes the train departure based on its ID.
    *
    * @param departureId the unique ID of the train to be removed
    */

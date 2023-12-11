@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,33 +45,16 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Add train departure")
     void addTrainDepartureWithValidInputs() {
-      assertTrue(tdr.checkIfDepartureIdExists(1));
+      assertTrue(tdr.doesDepartureIdExist(1));
     }
 
-    /** Testing the sorting of the register and the toString method. */
-    @Test
-    @DisplayName("Test the sorting and toString method")
-    void sortTrainDepartureRegisterAndReturnUsingToString() {
-      ArrayList<TrainDeparture> sortedList = tdr.sortTheTrainDepartureRegister();
-      assertEquals(
-          "["
-              + trainDepartureNumber1
-              + ", "
-              + trainDepartureNumber4
-              + ", "
-              + trainDepartureNumber2
-              + ", "
-              + trainDepartureNumber3
-              + "]",
-          sortedList.toString());
-    }
 
     /** Testing whether the train departures are removed before the time given. */
     @Test
     @DisplayName("Test the removal of train departures")
     void removeTrainDepartureBeforeTime() {
       tdr.removeTrainDepartureBeforeTime(LocalTime.of(11, 0));
-      assertFalse(tdr.checkIfDepartureIdExists(1));
+      assertFalse(tdr.doesDepartureIdExist(1));
     }
 
     /** Testing the error handling of the method that removes train departures. */
@@ -86,8 +68,8 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Check if train departure exists in the register")
     void checkIfIdExists() {
-      assertTrue(tdr.checkIfDepartureIdExists(1));
-      assertFalse(tdr.checkIfDepartureIdExists(9));
+      assertTrue(tdr.doesDepartureIdExist(1));
+      assertFalse(tdr.doesDepartureIdExist(9));
     }
 
     /**
@@ -97,15 +79,15 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Error handling of checkIfIdExists")
     void checkIfIdExistsErrorHandling() {
-      assertThrows(IllegalArgumentException.class, () -> tdr.checkIfDepartureIdExists(-1));
+      assertThrows(IllegalArgumentException.class, () -> tdr.doesDepartureIdExist(-1));
     }
 
     /** Testing whether there exist train departure(s) going to a specific destination. */
     @Test
     @DisplayName("Check if destination exists in the register")
     void checkIfDestinationExists() {
-      assertTrue(tdr.checkIfDestinationExists("Bergen"));
-      assertFalse(tdr.checkIfDestinationExists("Trondheim"));
+      assertTrue(tdr.doesDestinationExist("Bergen"));
+      assertFalse(tdr.doesDestinationExist("Trondheim"));
     }
 
     /**
@@ -115,9 +97,9 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Error handling of checkIfDestinationExists")
     void checkIfDestinationExistsErrorHandling() {
-      assertThrows(NullPointerException.class, () -> tdr.checkIfDestinationExists(null));
-      assertThrows(IllegalArgumentException.class, () -> tdr.checkIfDestinationExists(""));
-      assertThrows(IllegalArgumentException.class, () -> tdr.checkIfDestinationExists("   "));
+      assertThrows(NullPointerException.class, () -> tdr.doesDestinationExist(null));
+      assertThrows(IllegalArgumentException.class, () -> tdr.doesDestinationExist(""));
+      assertThrows(IllegalArgumentException.class, () -> tdr.doesDestinationExist("   "));
     }
 
     /**
@@ -140,7 +122,7 @@ class TrainDepartureRegisterTest {
     @DisplayName("Remove train departure based on ID")
     void removeTrainDepartureBasedOnId() {
       tdr.removeTrainDepartureBasedOnId(1);
-      assertFalse(tdr.checkIfDepartureIdExists(1));
+      assertFalse(tdr.doesDepartureIdExist(1));
     }
 
     /** Testing the error handling of the method that removes train departure based on its ID. */
@@ -177,8 +159,8 @@ class TrainDepartureRegisterTest {
     @Test
     @DisplayName("Get train departure based on destination")
     void getTrainDepartureBasedOnDestination() {
-      String outcome = tdr.returnTrainDeparturesBasedOnDestination("Bergen").toString();
-      assertEquals("[" + trainDepartureNumber1 + ", " + trainDepartureNumber3 + "]", outcome);
+      String outcome = tdr.returnTrainDeparturesBasedOnDestinationAsString("Bergen");
+      assertEquals( trainDepartureNumber1 + "\n" + trainDepartureNumber3, outcome);
     }
 
     /**
@@ -189,11 +171,11 @@ class TrainDepartureRegisterTest {
     @DisplayName("Error handling of getTrainDepartureBasedOnDestination")
     void getTrainDepartureBasedOnDestinationErrorHandling() {
       assertThrows(
-          NullPointerException.class, () -> tdr.returnTrainDeparturesBasedOnDestination(null));
+          NullPointerException.class, () -> tdr.returnTrainDeparturesBasedOnDestinationAsString(null));
       assertThrows(
-          IllegalArgumentException.class, () -> tdr.returnTrainDeparturesBasedOnDestination(""));
+          IllegalArgumentException.class, () -> tdr.returnTrainDeparturesBasedOnDestinationAsString(""));
       assertThrows(
-          IllegalArgumentException.class, () -> tdr.returnTrainDeparturesBasedOnDestination("   "));
+          IllegalArgumentException.class, () -> tdr.returnTrainDeparturesBasedOnDestinationAsString("   "));
     }
 
     /** Testing the retrieval of total number of train departures. */

@@ -1,4 +1,4 @@
-package edu.ntnu.stud;
+package edu.ntnu.stud.app;
 
 import edu.ntnu.stud.userinterface.UserInterface;
 

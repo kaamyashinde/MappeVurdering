@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
  * value.
  *
  * @author 10083
- * @since 1.1
- * @version 1.2
+ * @since 1.0
+ * @version 1.0.2
  */
 public class UserInputValidation {
   /**
@@ -47,7 +47,7 @@ public class UserInputValidation {
       case 4 -> isValid = num == 1 || num == 0;
       case 5 -> isValid = num > -1 && num < 9;
       case 6 -> isValid = num > -1 && num < 24;
-      case 7 -> isValid = num > -1 && num < 60;
+      default -> isValid = num > -1 && num < 60;
     }
     return isValid;
   }
@@ -67,7 +67,7 @@ public class UserInputValidation {
   private static boolean conditionToValidateAgainstDependingOnStringUserInput(
       int caseNum, String userInput) {
     Pattern forTrainLine = Pattern.compile("[A-Z]\\d{2}"); // case num 2
-    Pattern forDestination = Pattern.compile("^[A-Z][a-z]*$"); // case num 1
+    Pattern forDestination = Pattern.compile("^[A-Za-z\\s]+$"); // case num 1
 
     Matcher matcher =
         (caseNum == 1) ? forDestination.matcher(userInput) : forTrainLine.matcher(userInput);
@@ -120,16 +120,17 @@ public class UserInputValidation {
    * @param input the scanner object
    * @param caseNum the case number to trigger the appropriate validation
    * @return validated integer or dummy value
+   * @throws IllegalArgumentException if the amount of failed attempts exceeds 3
    */
-  public static int validateIntegerUserInput(Scanner input, int caseNum) {
+  public static int validateIntegerUserInput(Scanner input, int caseNum)
+      throws IllegalArgumentException {
     int attempts = 3;
     int start = 0;
     while (true) {
       start++;
 
       try {
-        int num;
-        num = input.nextInt();
+        int num = input.nextInt();
         if (conditionToValidateAgainstDependingOnIntUserInput(num, caseNum)) {
           return num;
         } else {
@@ -149,41 +150,6 @@ public class UserInputValidation {
   }
 
   /**
-   * Validates the time input. The method takes the scanner object and the exit message to be
-   * displayed when the user has exceeded the number of attempts .
-   *
-   * @param input the scanner object
-   * @param exitMessage depends on the context of the method call
-   * @return validated time or the dummy value
-   */
-  public static LocalTime validateTimeUserInput(Scanner input, String exitMessage) {
-    int attempts = 3;
-    int start = 0;
-    while (true) {
-      start++;
-      try {
-        System.out.println("Enter the time in hours (0-23): ");
-        int hour = input.nextInt();
-
-        System.out.println("Enter the time in minutes (0-59): ");
-        int min = input.nextInt();
-
-        return LocalTime.of(hour, min);
-      } catch (DateTimeException | IllegalArgumentException | InputMismatchException e) {
-        System.out.println(
-            "Error: Please enter a time between 00:00 and 23:59. You have "
-                + (attempts - start)
-                + " attempts remaining before the system returns back to the menu.\n");
-        input.nextLine();
-      }
-      if (start == 3) {
-        System.out.println("Too many failed attempts." + exitMessage);
-        return null;
-      }
-    }
-  }
-
-  /**
    * Validation of the string inputs. The case number and their corresponding conditions are as
    * follows:
    *
@@ -196,8 +162,10 @@ public class UserInputValidation {
    * @param message the prompt message to be displayed when asking for the input
    * @param caseNum the case number
    * @return validated string or dummy value (empty string)
+   * @throws IllegalArgumentException if number of failed attempts exceeds 3
    */
-  public static String validateStringUserInput(Scanner input, String message, int caseNum) {
+  public static String validateStringUserInput(Scanner input, String message, int caseNum)
+      throws IllegalArgumentException {
     String text = null;
 
     System.out.println(message);
@@ -207,7 +175,8 @@ public class UserInputValidation {
       if (!text.isBlank() && conditionToValidateAgainstDependingOnStringUserInput(caseNum, text)) {
         return text;
       } else if (i == 1) {
-       throw new IllegalArgumentException("Too many failed attempts. The departure won't be added.");
+        throw new IllegalArgumentException(
+            "Too many failed attempts. The departure won't be added.");
       } else {
         System.out.println("Invalid input. Please try again. Attempts remaining: " + (i - 1));
       }

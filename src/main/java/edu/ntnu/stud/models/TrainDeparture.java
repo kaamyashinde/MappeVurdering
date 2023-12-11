@@ -18,18 +18,13 @@ import java.util.Objects;
  *
  * <p><Strong>Goal: </Strong>Act as a model for storing information about train departures.
  *
- * @version 1.2
+ * @version 1.0.3
  * @author 10083
  * @since 0.1
  */
 public class TrainDeparture {
-  // private static final DateTimeFormatter DELAY_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-  // private static final DateTimeFormatter DEPARTURE_FORMATTER =
-  // DateTimeFormatter.ofPattern("HH:mm");
-
   private final int departureId;
   private final LocalTime departureTime;
-  // private final String departureTimeFormatted;
   private final String destination;
   private final String trainLine;
   private LocalTime delayedTime;
@@ -39,7 +34,8 @@ public class TrainDeparture {
   /**
    * Constructs a new train departure with the specified details.
    *
-   *
+   * @param departureTimeInHours int representing the departure time in hours
+   * @param departureTimeInMinutes int representing the departure time in minutes
    * @param trainLine string representing the train line
    * @param departureId int representing the unique identifier for the train
    * @param destination string representing the destination for the train
@@ -62,14 +58,14 @@ public class TrainDeparture {
       int delay,
       int track)
       throws NullPointerException, IllegalArgumentException {
-    ParameterValidation.validateTime(LocalTime.of(departureTimeInHours, departureTimeInMinutes));
+    ParameterValidation.validateHour(departureTimeInHours);
+    ParameterValidation.validateMinute(departureTimeInMinutes);
     ParameterValidation.notBlankValidation(
         trainLine, "No Train line has been detected. Please enter the train line");
     ParameterValidation.notBlankValidation(
         destination, "No destination has been detected. Please enter the destination");
     ParameterValidation.validateId(departureId);
     this.departureTime = LocalTime.of(departureTimeInHours, departureTimeInMinutes);
-    // this.departureTimeFormatted = this.departureTime.format(DEPARTURE_FORMATTER);
     this.trainLine = trainLine;
     this.departureId = departureId;
     this.destination = destination;
@@ -108,7 +104,7 @@ public class TrainDeparture {
    *
    * @return The track number for the train
    */
-  public String getTrainLine() {
+  private String getTrainLine() {
     return trainLine;
   }
 
@@ -183,6 +179,8 @@ public class TrainDeparture {
   /**
    * Retrieves a formatted string representation of the train departure.
    *
+   * <p><Strong>PS. </Strong>ChatGPT was used to implement <code>String.format()</code>
+   *
    * @return The formatted string with all attributes
    */
   @Override
@@ -192,7 +190,7 @@ public class TrainDeparture {
             + getDestination().substring(1).toLowerCase();
     return String.format(
         "| %-10s | %-10s | %-10d | %-20s | %-10s | %-5s |",
-        getDepartureId(),
+        getDepartureTime(),
         getTrainLine(),
         getDepartureId(),
         formattedDestination,
